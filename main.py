@@ -4,8 +4,6 @@ import os
 import urllib
 import time
 
-import bottlenose
-
 from xml.etree.ElementTree import *
 
 from google.appengine.ext import ndb
@@ -14,6 +12,7 @@ import jinja2
 import webapp2
 
 import config
+import yahoo
 
 ROOTPATH = os.path.dirname(__file__)
 
@@ -77,7 +76,7 @@ class MainPage(webapp2.RequestHandler):
         MediumImage = ImageSet.find(xmlns + 'MediumImage')
         image_url = MediumImage.findtext(xmlns + 'URL')
 
-    word = Word(word_id=next_id, member_id=1, word=post_word, hiragana=post_word, amazonlink=image_url)
+    word = Word(word_id=next_id, member_id=1, word=post_word, hiragana=yahoo.reading(post_word), amazonlink=image_url)
     word.put()
     self.redirect('/')
 

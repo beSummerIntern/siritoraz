@@ -93,9 +93,9 @@ class MainPage(webapp2.RequestHandler):
         if len(Item):
           ImageSets = Item[0].find(xmlns + 'ImageSets')
           ImageSet = ImageSets.find(xmlns + 'ImageSet')
-          MediumImage = ImageSet.find(xmlns + 'SmallImage')
+          Image = ImageSet.find(xmlns + 'SmallImage')
           # 画像URL
-          image_url = MediumImage.findtext(xmlns + 'URL')
+          image_url = Image.findtext(xmlns + 'URL')
           # アフィリエイトURL
           amazon_link = Item[0].findtext(xmlns + 'DetailPageURL')
     else:

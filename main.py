@@ -62,9 +62,9 @@ class MainPage(webapp2.RequestHandler):
     hiragana = yahoo.reading(post_word)
 
     # しりとらず失敗判定
-    old_words = Word.query(Word.word_id == post_count-1)
+    old_words = Word.query(Word.word_id == post_count)
     for old_word in old_words:
-      if hiragana[len(hiragana)-1] == old_word.hiragana[len(old_word.hiragana)-1]:
+      if hiragana[0] == old_word.hiragana[len(old_word.hiragana)-1]:
         isFailed = True
 
     image_url = ''

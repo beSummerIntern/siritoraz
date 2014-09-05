@@ -56,14 +56,14 @@
 			</form>
 
 			{% for word in words %}
-				{{ word.word_id }}
-				{{ word.member_id }}
-				{{ word.word }}
-				{{ word.hiragana }}
-				{{ word.amazonlink}}
-				{{ word.created }}
-				<img src={{word.amazonlink}} style="width : 30px;">
-				<br>
+			{{ word.word_id }}
+			{{ word.member_id }}
+			{{ word.word }}
+			{{ word.hiragana }}
+			{{ word.amazon_link }}
+			{{ word.created }}
+			<img src={{ word.image_url }} style="width : 50px;">
+			<br>
 			{% endfor %}
 
 		</div>

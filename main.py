@@ -62,8 +62,10 @@ class MainPage(webapp2.RequestHandler):
     hiragana = yahoo.reading(post_word)
 
     # しりとらず失敗判定
-    # if hiragana[len(hiragana)-1] == Word.query(word_id=post_count):
-    #   isFalied = True
+    old_words = Word.query(Word.word_id == post_count-1)
+    for old_word in old_words:
+      if hiragana[len(hiragana)-1] == old_word.hiragana[len(old_word.hiragana)-1]:
+        isFailed = True
 
     image_url = ''
     amazon_link = ''
@@ -72,6 +74,7 @@ class MainPage(webapp2.RequestHandler):
     retry_count = 0
     while retry_count < 5:
       try:
+        # Amazon商品検索
         res = config.amazon.ItemSearch(Keywords=post_word, SearchIndex='All', ItemPage='1', ResponseGroup="Medium")
       except:
         retry_count += 1
@@ -82,6 +85,7 @@ class MainPage(webapp2.RequestHandler):
     # xml切り出し
     root = fromstring(res)
     Items = root.find(xmlns + 'Items')
+    # 商品数
     TotalResults = Items.findtext(xmlns + 'TotalResults')
     if int(TotalResults) != 0:
       if len(Items):
@@ -90,7 +94,9 @@ class MainPage(webapp2.RequestHandler):
           ImageSets = Item[0].find(xmlns + 'ImageSets')
           ImageSet = ImageSets.find(xmlns + 'ImageSet')
           MediumImage = ImageSet.find(xmlns + 'SmallImage')
+          # 画像URL
           image_url = MediumImage.findtext(xmlns + 'URL')
+          # アフィリエイトURL
           amazon_link = Item[0].findtext(xmlns + 'DetailPageURL')
     else:
       # しりとらず失敗

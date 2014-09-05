@@ -60,9 +60,10 @@
 			{{ word.member_id }}
 			{{ word.word }}
 			{{ word.hiragana }}
-			{{ word.amazon_link }}
 			{{ word.created }}
-			<img src={{ word.image_url }} style="width : 50px;">
+			<a href={{ word.amazon_link }}>
+				<img src={{ word.image_url }} style="width : 50px;">
+			</a>
 			<br>
 			{% endfor %}
 

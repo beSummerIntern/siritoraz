@@ -39,7 +39,7 @@ class Word(ndb.Model):
 class MainPage(webapp2.RequestHandler):
 
   def get(self):
-    words = Word.query().order(-Word.word_id)
+    words = Word.query().order(-Word.word_id).fetch(10)
     template_values = {
       'words': words
     }

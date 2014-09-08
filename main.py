@@ -47,8 +47,9 @@ class MainPage(webapp2.RequestHandler):
 
   def get(self):
     # Channel TokenID 生成
-    source_str = 'abcdefghijklmnopqrstuvwxyz'
-    # client_id = "".join([random.choice(source_str) for x in xrange(10)]) + str(time())
+    # source_str = 'abcdefghijklmnopqrstuvwxyz'
+    # client_id = ""
+    # client_id.join([random.choice(source_str) for x in xrange(10)])
     # client_id = '123456'
     # token = channel.create_channel(client_id)
 

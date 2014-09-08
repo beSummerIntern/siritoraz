@@ -168,7 +168,7 @@ class MainPage(webapp2.RequestHandler):
         word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
         word.put()
 
-        new_word = '{"message":{"word_id":"' + str(next_id) + '","member_id":"' + str(0) + '","word":"' + post_word + '","hiragana":"' + hiragana + '","image_url":"' + image_url + '","amazon_link":"' + amazon_link + '"}}'
+        new_word = '{"word_id":"' + str(next_id) + '","member_id":"' + str(0) + '","word":"' + post_word + '","hiragana":"' + hiragana + '","image_url":"' + image_url + '","amazon_link":"' + amazon_link + '"}'
 
         # 同時接続中ユーザーのClient ID一覧を取得
         users = memcache.get(USER_KEY)

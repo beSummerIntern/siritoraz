@@ -3,11 +3,10 @@ $(document).ready(function() {
 	var channel = new goog.appengine.Channel($("#token").val());
 	var socket = channel.open({
 		onopen : function(){
-			console.log("connect!");
 		},
 
 		onmessage : function(message) {
-			console.log(message);
+			addWord(JSON.parse(message.data));
 		},
 
 		onerror : function(error) {
@@ -32,8 +31,8 @@ $(document).ready(function() {
 	});
 
 	// 今のワード変更時
-	function addWord(word) {
-		$("#screen_word").text(word.word);
-		$("#screen_hiragana").text(word.hiragana);
+	function addWord(data) {
+		$("#screen_word").text(data.word);
+		$("#screen_hiragana").text(data.hiragana);
 	}
 });

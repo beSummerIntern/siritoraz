@@ -6,6 +6,7 @@ import time
 import datetime
 import random
 import uuid
+import re
 
 from xml.etree.ElementTree import *
 
@@ -102,7 +103,7 @@ class MainPage(webapp2.RequestHandler):
     # テキストフィールドのワード取得
     post_word = self.request.get('word')
 
-    if post_word != '':
+    if not isAlphabet(post_word):
       # IDのオートインクリメント
       post_count = Word.query().count()
       next_id = post_count + 1
@@ -164,8 +165,11 @@ class MainPage(webapp2.RequestHandler):
             # 一人ずつ更新を通知する
             channel.send_message(id, new_word)
 
-    # self.redirect('/')
+    self.redirect('/')
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)
   ], debug=True)
+
+def isAlphabet(text):
+  return re.search(u'[(a-zA-Z)( 　)(\(\)\.\^\$\*\+\?)]', text)

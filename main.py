@@ -31,7 +31,7 @@ ROOTPATH = os.path.dirname(__file__)
 xmlns = '{http://webservices.amazon.com/AWSECommerceService/2011-08-01}'
 
 # memcacheのキー
-USER_KEY = 'Siritoraz'
+USER_KEY = 'siritoraz'
 
 JINJA_ENVIRONMENT = jinja2.Environment(
   loader = jinja2.FileSystemLoader([ROOTPATH, 'templates']),
@@ -57,7 +57,6 @@ class User:
     self.client_id = client_id
     self.token = token
     self.datetime = datetime.datetime.now()
-    self.ip = ''
 
 class MainPage(webapp2.RequestHandler):
 
@@ -171,7 +170,6 @@ class MainPage(webapp2.RequestHandler):
 
         # 同時接続中ユーザーのClient ID一覧を取得
         users = memcache.get(USER_KEY)
-        # if client_id in users:
         for user in users:
           # 一人ずつ更新を通知する
           channel.send_message(user, new_word)

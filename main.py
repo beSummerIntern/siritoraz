@@ -30,6 +30,7 @@ ROOTPATH = os.path.dirname(__file__)
 
 xmlns = '{http://webservices.amazon.com/AWSECommerceService/2011-08-01}'
 
+# memcacheのキー
 USER_KEY = 'Siritoraz'
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -49,7 +50,9 @@ class Word(ndb.Model):
   amazon_link = ndb.TextProperty()
   created = ndb.DateTimeProperty(auto_now_add=True)
 
+# ChanncelAPI用のユーザークラスの定義
 class User:
+
   def __init__(self, client_id, token):
     self.client_id = client_id
     self.token = token
@@ -61,9 +64,7 @@ class MainPage(webapp2.RequestHandler):
   def get(self):
     # Channel TokenID 生成
     source_str = 'abcdefghijklmnopqrstuvwxyz'
-
     client_id = str(uuid.uuid4())
-
     token = channel.create_channel(client_id)
 
     # 同時接続しているユーザーのClient ID一覧を取得
@@ -80,6 +81,7 @@ class MainPage(webapp2.RequestHandler):
 
     # データストアからワードデータの取得
     words = Word.query().order(-Word.word_id).fetch(11)
+    # page = 11
 
     # TODO デプロイ時は削除
     if len(words) == 0:
@@ -88,7 +90,8 @@ class MainPage(webapp2.RequestHandler):
 
     template_values = {
       'words': words,
-      'token': token
+      'token': token,
+      # 'page': page
     }
 
     template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -126,7 +129,7 @@ class MainPage(webapp2.RequestHandler):
       image_url = ''
       amazon_link = ''
 
-      # 503エラー対策
+      # Amazonの503エラー対策
       retry_count = 0
       while retry_count < 5:
         try:
@@ -173,6 +176,11 @@ class MainPage(webapp2.RequestHandler):
             channel.send_message(id, new_word)
 
     self.redirect('/')
+
+  # def more_read(self):
+  #   page = self.request.get('page')
+  #   # データストアからワードデータの取得
+  #   words = Word.query(Word.id > page).order(-Word.word_id).fetch(10)
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)

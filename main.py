@@ -106,7 +106,7 @@ class MainPage(webapp2.RequestHandler):
     # テキストフィールドのワード取得
     post_word = self.request.get('word')
 
-    if not (isAlphabet(post_word) or isBendSound(post_word[0]) or
+    if not (isAlphabet(post_word) or isSutegana(post_word[0]) or
         len(post_word) <= 1):
       # IDのオートインクリメント
       post_count = Word.query().count()
@@ -118,7 +118,7 @@ class MainPage(webapp2.RequestHandler):
       # しりとらず失敗判定(前回のワードの最後の文字と違うか)
       old_words = Word.query(Word.word_id == post_count)
       for old_word in old_words:
-        while isBendSound(old_word.hiragana[len(old_word.hiragana)-1]):
+        while isSutegana(old_word.hiragana[len(old_word.hiragana)-1]):
           old_word.hiragana = old_word.hiragana[0:len(old_word.hiragana)-1]
         if hiragana[0] == old_word.hiragana[len(old_word.hiragana)-1]:
           isFailed = True
@@ -192,5 +192,5 @@ app = webapp2.WSGIApplication([
 def isAlphabet(text):
   return re.search(u'[(1-9)(a-zA-Z)(\ \　\(\)\.\^\$\*\+\?)]', text)
 
-def isBendSound(text):
+def isSutegana(text):
   return re.search(u'[(ぁぃぅぇぉっゃゅょゎ)(ァィゥェォヵッャュョヮ)(\ー\-)]', text)

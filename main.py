@@ -178,13 +178,6 @@ class MainPage(webapp2.RequestHandler):
             # 一人ずつ更新を通知する
             channel.send_message(id, new_word)
 
-    self.redirect('/')
-
-  # def more_read(self):
-  #   page = self.request.get('page')
-  #   # データストアからワードデータの取得
-  #   words = Word.query(Word.id > page).order(-Word.word_id).fetch(10)
-
 app = webapp2.WSGIApplication([
   ('/', MainPage)
   ], debug=True)

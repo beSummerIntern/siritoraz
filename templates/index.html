@@ -27,16 +27,16 @@
 		<!-- word -->
 		<h2 class="col-md-offset-2 text-left">今のワード</h2>
 		<div id="screen">
-			<span style="font-size : 8em;">{{ words[0].word }}</span><br>
-			<span style="font-size : 2em;">{{ words[0].hiragana }}</span><span class="text-danger" style="font-size : 2.5em;"></span>
+			<span id="screen_word" style="font-size : 8em;">{{ words[0].word }}</span><br>
+			<span id="screen_hiragana" style="font-size : 2em;">{{ words[0].hiragana }}</span><span class="text-danger" style="font-size : 2.5em;"></span>
 		</div>
 
 		<!-- submit -->
-		<form class="form-horizontal" style="margin : 20px 0" action="/" method="post">
+		<form id="word_submit" class="form-horizontal" style="margin : 20px 0" action="/" method="post">
 			<div class="form-group">
 				<div class="col-md-6 col-md-offset-2">
 					<input type="text" name="word" class="form-control" placeholder="ワードを入れてください">
-					<input type="hidden" name="token" value={{ token }} />
+					<input id="token" type="hidden" name="token" value={{ token }} />
 				</div>
 				<input type="submit" class="btn btn-primary col-md-2" value="投稿">
 

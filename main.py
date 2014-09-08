@@ -30,6 +30,7 @@ ROOTPATH = os.path.dirname(__file__)
 
 xmlns = '{http://webservices.amazon.com/AWSECommerceService/2011-08-01}'
 
+# memcacheのキー
 USER_KEY = 'Siritoraz'
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -49,7 +50,9 @@ class Word(ndb.Model):
   amazon_link = ndb.TextProperty()
   created = ndb.DateTimeProperty(auto_now_add=True)
 
+# ChanncelAPI用のユーザークラスの定義
 class User:
+
   def __init__(self, client_id, token):
     self.client_id = client_id
     self.token = token
@@ -61,9 +64,7 @@ class MainPage(webapp2.RequestHandler):
   def get(self):
     # Channel TokenID 生成
     source_str = 'abcdefghijklmnopqrstuvwxyz'
-
     client_id = str(uuid.uuid4())
-
     token = channel.create_channel(client_id)
 
     # 同時接続しているユーザーのClient ID一覧を取得
@@ -80,6 +81,7 @@ class MainPage(webapp2.RequestHandler):
 
     # データストアからワードデータの取得
     words = Word.query().order(-Word.word_id).fetch(11)
+    # page = 11
 
     # TODO デプロイ時は削除
     if len(words) == 0:
@@ -88,7 +90,8 @@ class MainPage(webapp2.RequestHandler):
 
     template_values = {
       'words': words,
-      'token': token
+      'token': token,
+      # 'page': page
     }
 
     template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -103,7 +106,8 @@ class MainPage(webapp2.RequestHandler):
     # テキストフィールドのワード取得
     post_word = self.request.get('word')
 
-    if not isAlphabet(post_word):
+    if not (isAlphabet(post_word) or isSutegana(post_word[0]) or
+        len(post_word) <= 1):
       # IDのオートインクリメント
       post_count = Word.query().count()
       next_id = post_count + 1
@@ -114,6 +118,8 @@ class MainPage(webapp2.RequestHandler):
       # しりとらず失敗判定(前回のワードの最後の文字と違うか)
       old_words = Word.query(Word.word_id == post_count)
       for old_word in old_words:
+        while isSutegana(old_word.hiragana[len(old_word.hiragana)-1]):
+          old_word.hiragana = old_word.hiragana[0:len(old_word.hiragana)-1]
         if hiragana[0] == old_word.hiragana[len(old_word.hiragana)-1]:
           isFailed = True
 
@@ -126,7 +132,7 @@ class MainPage(webapp2.RequestHandler):
       image_url = ''
       amazon_link = ''
 
-      # 503エラー対策
+      # Amazonの503エラー対策
       retry_count = 0
       while retry_count < 5:
         try:
@@ -177,4 +183,7 @@ app = webapp2.WSGIApplication([
   ], debug=True)
 
 def isAlphabet(text):
-  return re.search(u'[(a-zA-Z)( 　)(\(\)\.\^\$\*\+\?)]', text)
+  return re.search(u'[(1-9)(a-zA-Z)(\ \　\(\)\.\^\$\*\+\?)]', text)
+
+def isSutegana(text):
+  return re.search(u'[(ぁぃぅぇぉっゃゅょゎ)(ァィゥェォヵッャュョヮ)(\ー\-)]', text)

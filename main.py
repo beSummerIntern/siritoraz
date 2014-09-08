@@ -55,6 +55,11 @@ class MainPage(webapp2.RequestHandler):
 
     words = Word.query().order(-Word.word_id).fetch(11)
 
+    # TODO デプロイ時は削除
+    if len(words) == 0:
+      words = Word(word_id=1, member_id=0, word=u"しりとらず", hiragana=u"しりとらず", image_url="", amazon_link="")
+      words.put()
+
     template_values = {
       'words': words,
       # 'token': token

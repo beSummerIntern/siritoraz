@@ -63,7 +63,6 @@ class MainPage(webapp2.RequestHandler):
 
   def get(self):
     # Channel TokenID 生成
-    source_str = 'abcdefghijklmnopqrstuvwxyz'
     client_id = str(uuid.uuid4())
     token = channel.create_channel(client_id)
 

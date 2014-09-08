@@ -5,6 +5,7 @@ import urllib
 import time
 import datetime
 import random
+import uuid
 
 from xml.etree.ElementTree import *
 
@@ -59,7 +60,8 @@ class MainPage(webapp2.RequestHandler):
   def get(self):
     # Channel TokenID 生成
     source_str = 'abcdefghijklmnopqrstuvwxyz'
-    client_id = "".join([random.choice(source_str) for x in range(10)]) + str(time.time())
+    # client_id = "".join([random.choice(source_str) for x in range(10)]) + str(time.time())
+    client_id = str(uuid.uuid4())
     token = channel.create_channel(client_id)
 
     # 同時接続しているユーザーのClient ID一覧を取得

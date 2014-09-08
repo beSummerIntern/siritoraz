@@ -165,12 +165,7 @@ class MainPage(webapp2.RequestHandler):
             # 一人ずつ更新を通知する
             channel.send_message(id, new_word)
 
-        # channel.send_message(token, new_word)
-
-    self.redirect('/')
-
-    # template = JINJA_ENVIRONMENT.get_template('index.html')
-    # self.response.write(template.render(token))
+    # self.redirect('/')
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)

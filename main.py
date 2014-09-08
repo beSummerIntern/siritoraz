@@ -111,10 +111,16 @@ class MainPage(webapp2.RequestHandler):
       # ワードのひらがな変換
       hiragana = yahoo.reading(post_word)
 
-      # しりとらず失敗判定
+      # しりとらず失敗判定(前回のワードの最後の文字と違うか)
       old_words = Word.query(Word.word_id == post_count)
       for old_word in old_words:
         if hiragana[0] == old_word.hiragana[len(old_word.hiragana)-1]:
+          isFailed = True
+
+      # しりとらず失敗判定(今までに同じワードが出たか)
+      old_words = Word.query(Word.hiragana == hiragana)
+      for old_word in old_words:
+        if old_word.hiragana:
           isFailed = True
 
       image_url = ''

@@ -60,8 +60,12 @@ class MainPage(webapp2.RequestHandler):
   def get(self):
     # Channel TokenID 生成
     source_str = 'abcdefghijklmnopqrstuvwxyz'
+<<<<<<< HEAD
     # client_id = "".join([random.choice(source_str) for x in range(10)]) + str(time.time())
     client_id = str(uuid.uuid4())
+=======
+    client_id = "".join([random.choice(source_str) for x in range(10)]) + str(time.time())
+>>>>>>> hotsure
     token = channel.create_channel(client_id)
 
     # 同時接続しているユーザーのClient ID一覧を取得

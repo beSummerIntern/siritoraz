@@ -164,6 +164,7 @@ class MainPage(webapp2.RequestHandler):
         word.put()
 
         new_word = '{"message":{"word_id":"' + str(next_id) + '","member_id":"' + str(0) + '","word":"' + post_word + '","hiragana":"' + hiragana + '","image_url":"' + image_url + '","amazon_link":"' + amazon_link + '"}}'
+        self.response.write(new_word);
 
         # 同時接続中ユーザーのClient ID一覧を取得
         users = memcache.get(USER_KEY)
@@ -171,8 +172,6 @@ class MainPage(webapp2.RequestHandler):
            for id in users:
             # 一人ずつ更新を通知する
             channel.send_message(id, new_word)
-
-    self.redirect('/')
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)

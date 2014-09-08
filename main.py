@@ -68,7 +68,7 @@ class MainPage(webapp2.RequestHandler):
     token = channel.create_channel(client_id)
 
     # 同時接続しているユーザーのClient ID一覧を取得
-    users = memcache.get('users')
+    users = memcache.get(USER_KEY)
     if not users:
       users = {}
 
@@ -173,10 +173,10 @@ class MainPage(webapp2.RequestHandler):
 
         # 同時接続中ユーザーのClient ID一覧を取得
         users = memcache.get(USER_KEY)
-        if client_id in users:
-           for id in users:
-            # 一人ずつ更新を通知する
-            channel.send_message(id, new_word)
+        # if client_id in users:
+        for id in users:
+          # 一人ずつ更新を通知する
+          channel.send_message(id, new_word)
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)

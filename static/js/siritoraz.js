@@ -3,15 +3,15 @@ $(document).ready(function() {
 	var channel = new goog.appengine.Channel($("#token").val());
 	var socket = channel.open({
 		onopen : function(){
-			console.log("connect!")
-		}, 
+			console.log("connect!");
+		},
 
 		onmessage : function(message) {
 			console.log("message");
-		}, 
+		},
 
 		onerror : function(error) {
-		}, 
+		},
 
 		onclose : function(){
 		}

@@ -1,11 +1,28 @@
 $(document).ready(function() {
+	// 鯖接続開始
+	var channel = new goog.appengine.Channel($("#token").val());
+	var socket = channel.open({
+		onopen : function(){
+			console.log("connect!")
+		}, 
+
+		onmessage : function(message) {
+			console.log("message");
+		}, 
+
+		onerror : function(error) {
+		}, 
+
+		onclose : function(){
+		}
+	});
 
 	// ワード投稿時
 	$("#word_submit").submit(function(){
 		$.post("/", $(this).serialize(), function(response){
-			var data = JSON.parse(response);
+			// var data = JSON.parse(response);
 
-			addWord(data.message);
+			// addWord(data.message);
 		});
 
 		// ワード消去

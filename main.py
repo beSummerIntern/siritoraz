@@ -106,8 +106,7 @@ class MainPage(webapp2.RequestHandler):
     # テキストフィールドのワード取得
     post_word = self.request.get('word')
 
-    if not (isAlphabet(post_word) or isSutegana(post_word[0]) or
-        len(post_word) <= 1):
+    if not (isAlphabet(post_word) or isSutegana(post_word[0])):
       # IDのオートインクリメント
       post_count = Word.query().count()
       next_id = post_count + 1
@@ -174,9 +173,9 @@ class MainPage(webapp2.RequestHandler):
         # 同時接続中ユーザーのClient ID一覧を取得
         users = memcache.get(USER_KEY)
         # if client_id in users:
-        for id in users:
+        for user in users:
           # 一人ずつ更新を通知する
-          channel.send_message(id, new_word)
+          channel.send_message(user, new_word)
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)

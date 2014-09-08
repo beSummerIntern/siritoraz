@@ -7,7 +7,7 @@ $(document).ready(function() {
 		},
 
 		onmessage : function(message) {
-			console.log("message");
+			console.log(message);
 		},
 
 		onerror : function(error) {

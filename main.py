@@ -3,6 +3,7 @@
 import os
 import urllib
 import time
+import datetime
 import random
 
 from xml.etree.ElementTree import *
@@ -15,6 +16,8 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp import util
 
+from google.appengine.api import memcache
+
 import jinja2
 import webapp2
 
@@ -24,6 +27,8 @@ import yahoo
 ROOTPATH = os.path.dirname(__file__)
 
 xmlns = '{http://webservices.amazon.com/AWSECommerceService/2011-08-01}'
+
+USER_KEY = 'Siritoraz'
 
 JINJA_ENVIRONMENT = jinja2.Environment(
   loader = jinja2.FileSystemLoader([ROOTPATH, 'templates']),
@@ -39,20 +44,37 @@ class Word(ndb.Model):
   word = ndb.StringProperty()
   hiragana = ndb.StringProperty()
   image_url = ndb.StringProperty()
-  amazon_link = ndb.StringProperty()
+  amazon_link = ndb.TextProperty()
   created = ndb.DateTimeProperty(auto_now_add=True)
 
+class User:
+  def __init__(self, client_id, token):
+    self.client_id = client_id
+    self.token = token
+    self.datetime = datetime.datetime.now()
+    self.ip = ''
 
 class MainPage(webapp2.RequestHandler):
 
   def get(self):
     # Channel TokenID 生成
-    # source_str = 'abcdefghijklmnopqrstuvwxyz'
-    # client_id = ""
-    # client_id.join([random.choice(source_str) for x in xrange(10)])
-    # client_id = '123456'
-    # token = channel.create_channel(client_id)
+    source_str = 'abcdefghijklmnopqrstuvwxyz'
+    client_id = "".join([random.choice(source_str) for x in range(10)]) + str(time.time())
+    token = channel.create_channel(client_id)
 
+    # 同時接続しているユーザーのClient ID一覧を取得
+    users = memcache.get('users')
+    if not users:
+      users = {}
+
+    # ユーザークラスを作成する
+    user = User(client_id, token)
+
+    # 新しいClient IDを追加する
+    users[client_id] = user
+    memcache.set(USER_KEY, users)
+
+    # データストアからワードデータの取得
     words = Word.query().order(-Word.word_id).fetch(11)
 
     # TODO デプロイ時は削除
@@ -62,14 +84,14 @@ class MainPage(webapp2.RequestHandler):
 
     template_values = {
       'words': words,
-      # 'token': token
+      'token': token
     }
 
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render(template_values))
 
   def post(self):
-    token = self.request.get('token')
+    client_id = self.request.get('token')
 
     # しりとらずの失敗判定の初期化
     isFailed = False
@@ -130,11 +152,21 @@ class MainPage(webapp2.RequestHandler):
         word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
         word.put()
 
-        # channel.send_message(token, word)
+        new_word = '{"message":{"word_id":"' + str(next_id) + '","member_id":"' + str(0) + '","word":"' + post_word + '","hiragana":"' + hiragana + '","image_url":"' + image_url + '","amazon_link":"' + amazon_link + '"}}'
+
+        # 同時接続中ユーザーのClient ID一覧を取得
+        users = memcache.get(USER_KEY)
+        if client_id in users:
+           for id in users:
+            # 一人ずつ更新を通知する
+            channel.send_message(id, new_word)
+
+        # channel.send_message(token, new_word)
 
     self.redirect('/')
-    # self.response.out.write('/main')
 
+    # template = JINJA_ENVIRONMENT.get_template('index.html')
+    # self.response.write(template.render(token))
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)

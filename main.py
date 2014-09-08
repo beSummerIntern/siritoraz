@@ -179,4 +179,4 @@ app = webapp2.WSGIApplication([
   ], debug=True)
 
 def isAlphabet(text):
-  return re.search(u'[(a-zA-Z)( 　)(\(\)\.\^\$\*\+\?)]', text)
+  return re.search(u'[(1-9)(a-zA-Z)( 　)(\(\)\.\^\$\*\+\?)]', text)

@@ -53,7 +53,7 @@ class MainPage(webapp2.RequestHandler):
     # client_id = '123456'
     # token = channel.create_channel(client_id)
 
-    words = Word.query().order(-Word.word_id).fetch(10)
+    words = Word.query().order(-Word.word_id).fetch(11)
 
     template_values = {
       'words': words,

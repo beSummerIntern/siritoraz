@@ -31,7 +31,7 @@
 			<span style="font-size : 2em;">{{ words[0].hiragana }}</span><span class="text-danger" style="font-size : 2.5em;"></span>
 		</div>
 
-		<!-- search -->
+		<!-- submit -->
 		<form class="form-horizontal" style="margin : 20px 0" action="/" method="post">
 			<div class="form-group">
 				<div class="col-md-6 col-md-offset-2">
@@ -61,11 +61,11 @@
 				</thead>
 
 				<tbody>
-					{% for word in words %}
+					{% for word in words[1:] %}
 					<tr>
 						<td>{{ word.word_id }}</td>
 						<td>{{ word.word }}</td>
-						<td><a href={{ word.amazon_link }}><img src={{ word.image_url }} style="width : 30px;" alt="アマゾンの画像リンク"></a></td>
+						<td><a href={{ word.amazon_link }}><img src={{ word.image_url }} style="height : 30px;" alt="アマゾンの画像リンク"></a></td>
 						<td>{{ word.created }}</td>
 					</tr>
 					{% endfor %}

@@ -156,7 +156,7 @@ class MainPage(webapp2.RequestHandler):
             # 一人ずつ更新を通知する
             channel.send_message(id, new_word)
 
-    self.redirect('/')
+    # self.redirect('/')
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)

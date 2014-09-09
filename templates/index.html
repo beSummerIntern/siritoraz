@@ -82,7 +82,7 @@
 	{% for word in words %}
 	<span class="new_word" style="display: none">
 		{"word_id" : {{ word.word_id }}, "member_id" : {{ word.member_id }}, "word" : "{{ word.word }}",
-		"hiragana" : "{{ word.hiragana }}", "image_url" : "{{ word.image_url }}", "amazon_link" : "{{ word.amazon_link }}"}
+		"hiragana" : "{{ word.hiragana }}", "image_url" : "{{ word.image_url }}", "amazon_link" : "{{ word.amazon_link }}", "created_at" : "{{ word.created_at }}"}
 	</span>
 	{% endfor %}
 

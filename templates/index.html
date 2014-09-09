@@ -87,6 +87,10 @@
 	<script src="js/bootstrap.min.js"></script>
 	<script src="/_ah/channel/jsapi"></script>
 
+	<span id="new_word" style="display: none">
+	{"word_id" : {{ words[0].word_id }}, "member_id" : {{ words[0].member_id }}, "word" : "{{ words[0].word }}",
+		"hiragana" : "{{ words[0].hiragana }}", "image_url" : "{{ words[0].image_url }}", "amazon_link" : "{{ words[0].amazon_link }}"}
+	</span>
 	<script src="js/siritoraz.js"></script>
 </body>
 </html>

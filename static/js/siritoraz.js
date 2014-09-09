@@ -1,4 +1,8 @@
 $(document).ready(function() {
+	// 初期処理
+	var new_word = JSON.parse($("#new_word").text());
+	$("#new_word").remove();
+
 	// 鯖接続開始
 	var channel = new goog.appengine.Channel($("#token").val());
 	var socket = channel.open({
@@ -38,5 +42,8 @@ $(document).ready(function() {
 		$("#affiliate span").text(data.word);
 		$("#affiliate a").attr("href", data.amazon_link);
 		$("#affiliate img").attr("src", data.image_url);
+
+		// 過去ワードリストに前のワードを追加
+		
 	}
 });

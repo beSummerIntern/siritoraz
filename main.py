@@ -7,6 +7,7 @@ import datetime
 import random
 import uuid
 import re
+import json
 
 from xml.etree.ElementTree import *
 
@@ -48,7 +49,7 @@ class Word(ndb.Model):
   hiragana = ndb.StringProperty()
   image_url = ndb.StringProperty()
   amazon_link = ndb.TextProperty()
-  created = ndb.DateTimeProperty(auto_now_add=True)
+  created_at = ndb.DateTimeProperty(auto_now_add=True)
 
 # ChanncelAPI用のユーザークラスの定義
 class User:
@@ -56,7 +57,10 @@ class User:
   def __init__(self, client_id, token):
     self.client_id = client_id
     self.token = token
-    self.datetime = datetime.datetime.now()
+    self.time = 0.0
+
+  def update_time(self):
+    self.time = time.time()
 
 class MainPage(webapp2.RequestHandler):
 
@@ -68,18 +72,17 @@ class MainPage(webapp2.RequestHandler):
     # 同時接続しているユーザーのClient ID一覧を取得
     users = memcache.get(USER_KEY)
     if not users:
-      users = {}
+      users = []
 
     # ユーザークラスを作成する
     user = User(client_id, token)
 
     # 新しいClient IDを追加する
-    users[token] = user
+    users.append(user)
     memcache.set(USER_KEY, users)
 
     # データストアからワードデータの取得
     words = Word.query().order(-Word.word_id).fetch(11)
-    # page = 11
 
     # TODO デプロイ時は削除
     if len(words) == 0:
@@ -88,8 +91,7 @@ class MainPage(webapp2.RequestHandler):
 
     template_values = {
       'words': words,
-      'token': token,
-      # 'page': page
+      'token': token
     }
 
     template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -110,6 +112,13 @@ class MainPage(webapp2.RequestHandler):
 
     if isSutegana(post_word[0]):
       error_message = 'ワードが「ぁぃぅ」などで始まっています！'
+
+    # 5分以内の連続投稿の判定
+    users = memcache.get(USER_KEY)
+    for user in users:
+      if user.token == token:
+        if (time.time() - user.time) / 60 < 5:
+          error_message = '5分以内に連続して投稿することは出来ません'
 
     if error_message == '':
       # IDのオートインクリメント
@@ -173,21 +182,40 @@ class MainPage(webapp2.RequestHandler):
         word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
         word.put()
 
-        message = '{"word_id":"' + str(next_id) + '","member_id":"' + str(0) + '","word":"' + post_word + '","hiragana":"' + hiragana + '","image_url":"' + image_url + '","amazon_link":"' + amazon_link + '","type":"' + 'new_word' + '"}'
+        # 送信メッセージ用JSONの作成
+        message = {
+          'type': 'new_word',
+          'word_id': word.word_id,
+          'member_id': word.member_id,
+          'word': word.word,
+          'hiragana': word.hiragana,
+          'image_url': word.image_url,
+          'amazon_link': word.amazon_link,
+          'created_at': str(word.created_at)
+        }
 
         # 同時接続中ユーザーのClient ID一覧を取得
         users = memcache.get(USER_KEY)
         for user in users:
           # 一人ずつ更新を通知する
-          channel.send_message(user, message)
+          channel.send_message(user.token, json.dumps(message))
+          if user.token == token:
+            # user.update_time()
+            user.time = time.time()
+
+        memcache.set(USER_KEY, users)
 
     if not error_message == '':
-      message = '{"error_message":"' + error_message + '","type":"' + 'error' + '"}'
+      message = {
+        'type': 'error',
+        'error_message': error_message
+      }
+
       users = memcache.get(USER_KEY)
       # 投稿者に対してエラーメッセージを送信
       for user in users:
-        if user == token:
-          channel.send_message(user, message)
+        if user.token == token:
+          channel.send_message(user.token, json.dumps(message))
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)

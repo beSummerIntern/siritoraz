@@ -10,7 +10,13 @@ $(document).ready(function() {
 		},
 
 		onmessage : function(message) {
-			addWord(JSON.parse(message.data));
+			var data = JSON.parse(message.data);
+
+			if(data.type == "error") {
+				dispError(data.error_message);
+			} else if (data.type == "new_word") {
+				addWord(data);
+			}
 		},
 
 		onerror : function(error) {
@@ -22,20 +28,22 @@ $(document).ready(function() {
 
 	// ワード投稿時
 	$("#word_submit").submit(function(){
-		$.post("/", $(this).serialize(), function(response){
-			// var data = JSON.parse(response);
-
-			// addWord(data.message);
-		});
-
-		// 入力ワードの消去
-		$("#word_submit input[name='word']").val("");
+		// データ送信
+		$.post("/", $(this).serialize());
 
 		return false;
 	});
 
 	// 今のワード変更時
 	function addWord(data) {
+		// エラーメッセージ除去、更新
+		$("#word_submit .help-block").text("しりとらず成功！");
+		$("#word_submit").removeClass("has-error");
+
+		// 投稿欄内ワードの消去
+		$("#word_submit input[name='word']").val("");
+
+		// 表示の更新
 		$("#screen_word").text(data.word);
 		$("#screen_hiragana").text(data.hiragana);
 
@@ -51,5 +59,15 @@ $(document).ready(function() {
 			"><img src=" + new_word.image_url + ' style="height : 30px;" alt="アマゾンの画像リンク"></a></td>"' + 
 			"<td>" + new_word.created + "</td>" + 
 			"</tr>");
+
+		// new_word 更新
+		new_word = data;
+	}
+
+	// エラーメッセージ表示
+	function dispError(error_message) {
+		// メッセージ表示
+		$("#word_submit .help-block").text(error_message);
+		$("#word_submit").addClass("has-error");
 	}
 });

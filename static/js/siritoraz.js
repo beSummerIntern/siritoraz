@@ -1,7 +1,26 @@
 $(document).ready(function() {
 	// 初期処理
-	var new_word = JSON.parse($("#new_word").text());
-	$("#new_word").remove();
+	// 初期データをJSONに変換、配列に追加
+	var words = [];
+	$(".new_word").each(function() {
+		words.push(JSON.parse($(this).text()));
+		$(this).remove();
+	});
+
+	var new_word = words[0];
+
+	// 過去のワードリストを生成
+	var words_length = words.length;
+	for (var i = 1; i < words.length; i++) {
+		$("tbody").append("<tr>" +
+			"<td>" + words[i].word_id + "</td>" + 
+			"<td>" + words[i].word +
+			" （" + words[i].hiragana + "）</td>" +  
+			"<td>" + "<a href=" + words[i].amazon_link + 
+			"><img src=" + words[i].image_url + ' style="height : 30px;" alt="アマゾンの画像リンク"></a></td>"' + 
+			"<td>" + words[i].created_at + "</td>" + 
+			"</tr>");
+	}
 
 	// 鯖接続開始
 	var channel = new goog.appengine.Channel($("#token").val());
@@ -54,10 +73,11 @@ $(document).ready(function() {
 		// 過去ワードリストに前のワードを追加
 		$("tbody").prepend("<tr>" +
 			"<td>" + new_word.word_id + "</td>" + 
-			"<td>" + new_word.word + "</td>" + 
+			"<td>" + new_word.word +
+			"（" + new_word.hiragana + "）</td>" + 
 			"<td>" + "<a href=" + new_word.amazon_link + 
 			"><img src=" + new_word.image_url + ' style="height : 30px;" alt="アマゾンの画像リンク"></a></td>"' + 
-			"<td>" + new_word.created + "</td>" + 
+			"<td>" + new_word.created_at + "</td>" + 
 			"</tr>");
 
 		// new_word 更新

@@ -7,6 +7,7 @@ import datetime
 import random
 import uuid
 import re
+import json
 
 from xml.etree.ElementTree import *
 
@@ -48,7 +49,7 @@ class Word(ndb.Model):
   hiragana = ndb.StringProperty()
   image_url = ndb.StringProperty()
   amazon_link = ndb.TextProperty()
-  created = ndb.DateTimeProperty(auto_now_add=True)
+  created_at = ndb.DateTimeProperty(auto_now_add=True)
 
 # ChanncelAPI用のユーザークラスの定義
 class User:
@@ -110,6 +111,16 @@ class MainPage(webapp2.RequestHandler):
 
     if isSutegana(post_word[0]):
       error_message = 'ワードが「ぁぃぅ」などで始まっています！'
+
+    # 5分以内の連続投稿の判定
+    # users = memcache.get(USER_KEY)
+    # for user in users:
+    #   if user == token:
+    #     decode_user = json.loads(user)
+    #     if (int(decode_user.datetime.strftime('%M')) - int(datetime.datetime.now().strftime('%M'))) < 5:
+    #       error_message = '5分以内に連続して投稿することは出来ません'
+    #     else:
+    #       decode_user.datetime = datetime.datetime.now()
 
     if error_message == '':
       # IDのオートインクリメント
@@ -173,7 +184,18 @@ class MainPage(webapp2.RequestHandler):
         word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
         word.put()
 
-        message = '{"word_id":"' + str(next_id) + '","member_id":"' + str(0) + '","word":"' + post_word + '","hiragana":"' + hiragana + '","image_url":"' + image_url + '","amazon_link":"' + amazon_link + '","type":"' + 'new_word' + '"}'
+        # 送信メッセージ用JSONの作成
+        json_message = {
+          'type': 'new_word',
+          'word_id': word.word_id,
+          'member_id': word.member_id,
+          'word': word.word,
+          'hiragana': word.hiragana,
+          'image_url': word.image_url,
+          'amazon_link': word.amazon_link,
+          'created_at': str(word.created_at)
+        }
+        message = json.dumps(json_message)
 
         # 同時接続中ユーザーのClient ID一覧を取得
         users = memcache.get(USER_KEY)
@@ -182,7 +204,12 @@ class MainPage(webapp2.RequestHandler):
           channel.send_message(user, message)
 
     if not error_message == '':
-      message = '{"error_message":"' + error_message + '","type":"' + 'error' + '"}'
+      json_message = {
+        'type': 'error',
+        'error_message': error_message
+      }
+      message = json.dumps(json_message)
+
       users = memcache.get(USER_KEY)
       # 投稿者に対してエラーメッセージを送信
       for user in users:

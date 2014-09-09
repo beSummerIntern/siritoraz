@@ -125,7 +125,7 @@ class MainPage(webapp2.RequestHandler):
       # ワードのひらがな変換
       hiragana = yahoo.reading(post_word)
 
-      if isAlphabet(hiragana):
+      if not isAlphabet(hiragana):
         error_message = 'ワードに英数字、特殊記号が入っています！'
 
       # しりとらず失敗判定(前回のワードの最後の文字と違うか)
@@ -222,10 +222,7 @@ app = webapp2.WSGIApplication([
   ], debug=True)
 
 def isAlphabet(text):
-  return re.search(u'[(1-9)(１-９)(a-zA-Z)(ａ-ｚＡ-Ｚ)(\ \　\(\)\.\^\$\*\+\?)]', text)
-
-# def isJapanese(text):
-#   return re.search(u'^[ぁ-ん]+$', text)
+  return re.search(u'^[(ぁ-ん)(ー)]+$', unicode(text))
 
 def isSutegana(text):
   return re.search(u'[(ぁぃぅぇぉっゃゅょゎ)(ァィゥェォヵッャュョヮ)(\ー\-)]', text)

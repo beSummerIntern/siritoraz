@@ -24,8 +24,8 @@ $(document).ready(function() {
 			// addWord(data.message);
 		});
 
-		// ワード消去
-		$(":text[name='word']").val("");
+		// 入力ワードの消去
+		$("#word_submit input[name='word']").val("");
 
 		return false;
 	});
@@ -34,5 +34,9 @@ $(document).ready(function() {
 	function addWord(data) {
 		$("#screen_word").text(data.word);
 		$("#screen_hiragana").text(data.hiragana);
+
+		$("#affiliate span").text(data.word);
+		$("#affiliate a").attr("href", data.amazon_link);
+		$("#affiliate img").attr("src", data.image_url);
 	}
 });

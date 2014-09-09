@@ -61,14 +61,6 @@
 				</thead>
 
 				<tbody>
-					{% for word in words[1:] %}
-					<tr>
-						<td>{{ word.word_id }}</td>
-						<td>{{ word.word }}</td>
-						<td><a href={{ word.amazon_link }}><img src={{ word.image_url }} style="height : 30px;" alt="アマゾンの画像リンク"></a></td>
-						<td>{{ word.created }}</td>
-					</tr>
-					{% endfor %}
 				</tbody>
 			</table>
 
@@ -87,10 +79,13 @@
 	<script src="js/bootstrap.min.js"></script>
 	<script src="/_ah/channel/jsapi"></script>
 
-	<span id="new_word" style="display: none">
-		{"word_id" : {{ words[0].word_id }}, "member_id" : {{ words[0].member_id }}, "word" : "{{ words[0].word }}",
-		"hiragana" : "{{ words[0].hiragana }}", "image_url" : "{{ words[0].image_url }}", "amazon_link" : "{{ words[0].amazon_link }}"}
+	{% for word in words %}
+	<span class="new_word" style="display: none">
+		{"word_id" : {{ word.word_id }}, "member_id" : {{ word.member_id }}, "word" : "{{ word.word }}",
+		"hiragana" : "{{ word.hiragana }}", "image_url" : "{{ word.image_url }}", "amazon_link" : "{{ word.amazon_link }}"}
 	</span>
+	{% endfor %}
+
 	<script src="js/siritoraz.js"></script>
 </body>
 </html>

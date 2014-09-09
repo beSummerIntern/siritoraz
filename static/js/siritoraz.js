@@ -44,6 +44,12 @@ $(document).ready(function() {
 		$("#affiliate img").attr("src", data.image_url);
 
 		// 過去ワードリストに前のワードを追加
-		
+		$("tbody").prepend("<tr>" +
+			"<td>" + new_word.word_id + "</td>" + 
+			"<td>" + new_word.word + "</td>" + 
+			"<td>" + "<a href=" + new_word.amazon_link + 
+			"><img src=" + new_word.image_url + ' style="height : 30px;" alt="アマゾンの画像リンク"></a></td>"' + 
+			"<td>" + new_word.created + "</td>" + 
+			"</tr>");
 	}
 });

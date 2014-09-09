@@ -74,7 +74,7 @@ class MainPage(webapp2.RequestHandler):
     user = User(client_id, token)
 
     # 新しいClient IDを追加する
-    users[client_id] = user
+    users[token] = user
     memcache.set(USER_KEY, users)
 
     # データストアからワードデータの取得
@@ -96,15 +96,22 @@ class MainPage(webapp2.RequestHandler):
     self.response.write(template.render(template_values))
 
   def post(self):
-    client_id = self.request.get('token')
+    # 投稿者のトークンを取得
+    token = self.request.get('token')
 
-    # しりとらずの失敗判定の初期化
-    isFailed = False
+    # しりとらずのエラーメッセージ
+    error_message = ''
 
     # テキストフィールドのワード取得
     post_word = self.request.get('word')
 
-    if not (isAlphabet(post_word) or isSutegana(post_word[0])):
+    if isAlphabet(post_word):
+      error_message = 'ワードに英数字、特殊記号が入っています！'
+
+    if isSutegana(post_word[0]):
+      error_message = 'ワードが「ぁぃぅ」などで始まっています！'
+
+    if error_message == '':
       # IDのオートインクリメント
       post_count = Word.query().count()
       next_id = post_count + 1
@@ -118,13 +125,13 @@ class MainPage(webapp2.RequestHandler):
         while isSutegana(old_word.hiragana[len(old_word.hiragana)-1]):
           old_word.hiragana = old_word.hiragana[0:len(old_word.hiragana)-1]
         if hiragana[0] == old_word.hiragana[len(old_word.hiragana)-1]:
-          isFailed = True
+          error_message = u'「' + old_word.hiragana[len(old_word.hiragana)-1] + u'」で始まっています！'
 
       # しりとらず失敗判定(今までに同じワードが出たか)
       old_words = Word.query(Word.hiragana == hiragana)
       for old_word in old_words:
         if old_word.hiragana:
-          isFailed = True
+          error_message = str(old_word.word_id) + u'番目に同じワードが投稿されています！'
 
       image_url = ''
       amazon_link = ''
@@ -160,26 +167,34 @@ class MainPage(webapp2.RequestHandler):
               amazon_link = Item[0].findtext(xmlns + 'DetailPageURL')
       else:
         # しりとらず失敗
-        isFailed = True
+        error_message = '存在しないワードです！'
 
-      if not isFailed:
+      if error_message == '':
         word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
         word.put()
 
-        new_word = '{"word_id":"' + str(next_id) + '","member_id":"' + str(0) + '","word":"' + post_word + '","hiragana":"' + hiragana + '","image_url":"' + image_url + '","amazon_link":"' + amazon_link + '"}'
+        message = '{"word_id":"' + str(next_id) + '","member_id":"' + str(0) + '","word":"' + post_word + '","hiragana":"' + hiragana + '","image_url":"' + image_url + '","amazon_link":"' + amazon_link + '","type":"' + 'new_word' + '"}'
 
         # 同時接続中ユーザーのClient ID一覧を取得
         users = memcache.get(USER_KEY)
         for user in users:
           # 一人ずつ更新を通知する
-          channel.send_message(user, new_word)
+          channel.send_message(user, message)
+
+    if not error_message == '':
+      message = '{"error_message":"' + error_message + '","type":"' + 'error' + '"}'
+      users = memcache.get(USER_KEY)
+      # 投稿者に対してエラーメッセージを送信
+      for user in users:
+        if user == token:
+          channel.send_message(user, message)
 
 app = webapp2.WSGIApplication([
   ('/', MainPage)
   ], debug=True)
 
 def isAlphabet(text):
-  return re.search(u'[(1-9)(a-zA-Z)(\ \　\(\)\.\^\$\*\+\?)]', text)
+  return re.search(u'[(1-9)(１-９)(a-zA-Z)(ａ-ｚＡ-Ｚ)(\ \　\(\)\.\^\$\*\+\?)]', text)
 
 def isSutegana(text):
   return re.search(u'[(ぁぃぅぇぉっゃゅょゎ)(ァィゥェォヵッャュョヮ)(\ー\-)]', text)

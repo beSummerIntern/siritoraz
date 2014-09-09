@@ -107,9 +107,6 @@ class MainPage(webapp2.RequestHandler):
     # テキストフィールドのワード取得
     post_word = self.request.get('word')
 
-    if isAlphabet(post_word):
-      error_message = 'ワードに英数字、特殊記号が入っています！'
-
     if isSutegana(post_word[0]):
       error_message = 'ワードが「ぁぃぅ」などで始まっています！'
 
@@ -127,6 +124,9 @@ class MainPage(webapp2.RequestHandler):
 
       # ワードのひらがな変換
       hiragana = yahoo.reading(post_word)
+
+      if isAlphabet(hiragana):
+        error_message = 'ワードに英数字、特殊記号が入っています！'
 
       # しりとらず失敗判定(前回のワードの最後の文字と違うか)
       old_words = Word.query(Word.word_id == post_count)
@@ -223,6 +223,9 @@ app = webapp2.WSGIApplication([
 
 def isAlphabet(text):
   return re.search(u'[(1-9)(１-９)(a-zA-Z)(ａ-ｚＡ-Ｚ)(\ \　\(\)\.\^\$\*\+\?)]', text)
+
+# def isJapanese(text):
+#   return re.search(u'^[ぁ-ん]+$', text)
 
 def isSutegana(text):
   return re.search(u'[(ぁぃぅぇぉっゃゅょゎ)(ァィゥェォヵッャュョヮ)(\ー\-)]', text)

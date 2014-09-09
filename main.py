@@ -114,11 +114,11 @@ class MainPage(webapp2.RequestHandler):
       error_message = 'ワードが「ぁぃぅ」などで始まっています！'
 
     # 5分以内の連続投稿の判定
-    users = memcache.get(USER_KEY)
-    for user in users:
-      if user.token == token:
-        if (time.time() - user.time) / 60 < 5:
-          error_message = '5分以内に連続して投稿することは出来ません'
+    # users = memcache.get(USER_KEY)
+    # for user in users:
+    #   if user.token == token:
+    #     if (time.time() - user.time) / 60 < 5:
+    #       error_message = '5分以内に連続して投稿することは出来ません'
 
     if error_message == '':
       # IDのオートインクリメント

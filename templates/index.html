@@ -7,6 +7,16 @@
 	<title>しりとらず</title>
 
 	<link href="css/bootstrap.min.css" rel="stylesheet">
+
+	<style>
+	.word {
+		font-size : 8em;
+	}
+
+	.hiragana {
+		font-size : 2em;
+	}
+	</style>
 </head>
 <body>
 	<!-- header -->
@@ -23,14 +33,21 @@
 	</header>
 
 	<!-- content -->
-	<div class="container text-center">
-		<!-- word -->
-		<h2 class="col-md-offset-2 text-left">今のワード</h2>
-		<div id="screen">
-			<span id="screen_word" style="font-size : 8em;">{{ words[0].word }}</span><br>
-			<span id="screen_hiragana" style="font-size : 2em;">{{ words[0].hiragana }}</span><span class="text-danger" style="font-size : 2.5em;"></span>
+	<!-- word carousel-->
+	<h2 class="container col-md-offset-2 col-md-10 text-left">今のワード</h2>
+	<div id="carousel" class="carousel slide text-center" data-interval="false">
+		<div class="carousel-inner">
+			<div class="active item">
+				<span class="word">しりとらず</span><br>
+				<span class="hiragana">しりとらず</span>
+			</div>
 		</div>
 
+		<a class="carousel-control left" href="#carousel" data-slide="prev"></a>
+		<a class="carousel-control right" href="#carousel" data-slide="next"></a>
+	</div>
+
+	<div class="container text-center">
 		<!-- submit -->
 		<form id="word_submit" class="form-horizontal" style="margin : 20px 0" action="/" method="post">
 			<div class="form-group">

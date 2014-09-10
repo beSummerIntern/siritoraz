@@ -38,17 +38,22 @@ $(document).ready(function() {
 				// タイトルをスライド
 				$("#carousel").carousel("prev");
 
+
 				// スライド後処理
 				setTimeout(function() {
 					// タイトル消去
 					$("#carousel .carousel-inner > div").first().remove();
 
-					// TODO スライドボタン追加
+					// スライドボタン追加
 					$("#carousel_button").css("visibility", "visible");
-				}, 2000);
+
+					// プレイスホルダー編集
+					var hiragana = findStrongLetter(new_word.hiragana);
+					$("#word_submit input[name='word']").attr("placeholder", "「" + hiragana.strong_letter + "」から始まらないワードを入れてください");
+				}, 1500);
 
 				enableSubmit = true;
-			}, 1000);
+			}, 1500);
 		},
 
 		// メッセージ受信
@@ -88,6 +93,10 @@ $(document).ready(function() {
 		// エラーメッセージ除去、更新
 		$("#word_submit .help-block").text("しりとらず成功！");
 		$("#word_submit").removeClass("has-error");
+
+		// プレイスホルダー編集
+		var hiragana = findStrongLetter(data.hiragana);
+		$("#word_submit input[name='word']").attr("placeholder", "「" + hiragana.strong_letter + "」から始まらないワードを入れてください");
 
 		// 投稿欄内ワードの消去
 		$("#word_submit input[name='word']").val("");

@@ -44,6 +44,7 @@ $(document).ready(function() {
 					$("#carousel .carousel-inner > div").first().remove();
 
 					// TODO スライドボタン追加
+					$("#carousel_button").css("visibility", "visible");
 				}, 2000);
 
 				enableSubmit = true;
@@ -211,7 +212,7 @@ $(document).ready(function() {
 			$("#affiliate").css("display", "block");
 
 			if(parseInt(status) > 1) {
-				$("#carousel_button").css("visibility", "visible");
+				$("#carousel_button").css("display", "block");
 
 				if(parseInt(status) > 2) {
 					$("#past_wordlist").css("display", "block");

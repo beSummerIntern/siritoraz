@@ -21,7 +21,7 @@ $(document).ready(function() {
 	// 初訪問時のクッキー初期化
 	initCookies();
 	// クッキーの機能解放状態による画面表示非表示の変更
-	functionRelease(getCookie("releaseStatus"));
+	changeVisibility(getCookie("releaseStatus"));
 
 	// 鯖接続開始
 	var channel = new goog.appengine.Channel($("#token").val());
@@ -179,17 +179,14 @@ $(document).ready(function() {
 	// 初訪問時のクッキー初期化
 	function initCookies() {
 		if(!getCookie("releaseStatus")) {
-			console.log("releaseStatus!");
 			document.cookie = "releaseStatus=0";
 		}
 
 		if(!getCookie("postCount")) {
-			console.log("postCount!");
 			document.cookie = "postCount=0";
 		}
 
 		if(!getCookie("lastPostTime")) {
-			console.log("lastPostTime!");
 			document.cookie = "lastPostTime=0";
 		}
 	}
@@ -208,7 +205,7 @@ $(document).ready(function() {
 			$("#affiliate").css("display", "block");
 
 			if(parseInt(status) > 1) {
-				$("#carousel_bottun").css("visibility", "visible");
+				$("#carousel_button").css("visibility", "visible");
 
 				if(parseInt(status) > 2) {
 					$("#past_wordlist").css("display", "block");
@@ -234,7 +231,7 @@ $(document).ready(function() {
 
 		for (var i = 1; i <= hiragana.length; i++) {
 			var character = "" + hiragana[hiragana.length - i];
-			if(character.search(/[(ぁぃぅぇぉっゃゅょゎ)(\ー)]/) < 0) {
+			if(character.search(/[(ぁぃぅぇぉっゃゅょゎ)(ー)]/) < 0) {
 				index =  hiragana.length - i;
 				break;
 			}

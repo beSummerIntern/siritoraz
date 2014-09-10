@@ -228,4 +228,4 @@ def isAlphabet(text):
   return re.search(u'^[(ぁ-ん)(ー)]+$', unicode(text))
 
 def isSutegana(text):
-  return re.search(u'[(ぁぃぅぇぉっゃゅょゎ)(ァィゥェォヵッャュョヮ)(\ー\-)]', text)
+  return re.search(u'[(ぁぃぅぇぉっゃゅょゎ)(ー)]', text)

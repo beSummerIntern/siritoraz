@@ -197,6 +197,12 @@ $(document).ready(function() {
 		if(status == "0" && count == "1") {
 			document.cookie = "releaseStatus=1";
 		}
+		else if(status == "1" && count == "2") {
+			document.cookie = "releaseStatus=2";
+		}
+		else if(status == "2" && count == "3") {
+			document.cookie = "releaseStatus=3";
+		}
 	}
 
 	// 機能解放状態による画面表示非表示の変更

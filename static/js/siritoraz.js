@@ -254,7 +254,7 @@ $(document).ready(function() {
 			$('#myModal').modal("toggle");
 		}
 		// ３回目の投稿
-		else if(status >= "3") {
+		else if(status == "3") {
 			$("#achieve").text("しりとらずを３回成功させる");
 			$("#reword_function").text("過去ワードリスト");
 			$("#next_achieve").text("自分で探してください");

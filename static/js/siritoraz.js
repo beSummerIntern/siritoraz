@@ -67,6 +67,9 @@ $(document).ready(function() {
 	// ワード投稿時
 	$("#word_submit").submit(function(){
 		if (enableSubmit) {
+			// カルーセルを今のワードへフォーカス
+			$("#carousel").carousel($("#carousel .carousel-inner").find(".item").length - 1);
+
 			$.post("/", $(this).serialize());
 			enableSubmit = false;
 		}
@@ -83,10 +86,12 @@ $(document).ready(function() {
 		// 投稿欄内ワードの消去
 		$("#word_submit input[name='word']").val("");
 
-		// 表示の更新
+		// カルーセル追加
 		addCarouselWord(data);
-		$("#carousel").carousel("next");
 
+		// カルーセルを今のワードへフォーカス
+		$("#carousel").carousel($("#carousel .carousel-inner").find(".item").length - 1);
+		
 		$("#affiliate span").text(data.word);
 		$("#affiliate a").attr("href", data.amazon_link);
 		$("#affiliate img").attr("src", data.image_url);
@@ -117,7 +122,9 @@ $(document).ready(function() {
 		var string_data = findStrongLetter(data.hiragana);
 
 		$("#carousel .carousel-inner").append(
-			'<div class="item"><span class="word">' + 
+			'<div class="item">' + 
+			'<h2 style="visibility: visible">今のワード</h2>' + 
+			'<span class="word">' + 
 			data.word + '</span><br><span class="hiragana">' + 
 			string_data.first_string + '</span><span class="last_letter text-danger">' + 
 			string_data.strong_letter + '</span><span class="hiragana">' + 

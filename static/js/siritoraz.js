@@ -259,6 +259,15 @@ $(document).ready(function() {
 
 			if(parseInt(status) > 1) {
 				$("#carousel_button").css("display", "block");
+				// カルーセルのスワイプ移動を許可
+				$("#carousel").carousel().swipe({
+					swipeLeft:function(event, direction, distance, duration, fingerCount) {
+						$(this).carousel('next');
+					},
+					swipeRight:function(event, direction, distance, duration, fingerCount) {
+						$(this).carousel('prev');
+					}
+				});
 
 				if(parseInt(status) > 2) {
 					$("#past_wordlist").css("display", "block");

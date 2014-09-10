@@ -97,7 +97,7 @@ $(document).ready(function() {
 
 		// カルーセルを今のワードへフォーカス
 		$("#carousel").carousel($("#carousel .carousel-inner").find(".item").length - 1);
-		
+
 		$("#affiliate span").text(data.word);
 		$("#affiliate a").attr("href", data.amazon_link);
 		$("#affiliate img").attr("src", data.image_url);
@@ -110,6 +110,9 @@ $(document).ready(function() {
 
 		// クッキーの投稿回数を1回増やす
 		addPostCount(parseInt(getCookie("postCount")));
+
+		// 投稿時間の更新
+		updateTime();
 
 		// 機能解放の判定
 		functionRelease(getCookie("releaseStatus"), getCookie("postCount"));
@@ -137,12 +140,12 @@ $(document).ready(function() {
 		var string_data = findStrongLetter(data.hiragana);
 
 		$("#carousel .carousel-inner").append(
-			'<div class="item">' + 
-			'<h2 style="visibility: visible">今のワード</h2>' + 
-			'<span class="word">' + 
-			data.word + '</span><br><span class="hiragana">' + 
-			string_data.first_string + '</span><span class="last_letter text-danger">' + 
-			string_data.strong_letter + '</span><span class="hiragana">' + 
+			'<div class="item">' +
+			'<h2 style="visibility: visible">今のワード</h2>' +
+			'<span class="word">' +
+			data.word + '</span><br><span class="hiragana">' +
+			string_data.first_string + '</span><span class="last_letter text-danger">' +
+			string_data.strong_letter + '</span><span class="hiragana">' +
 			string_data.last_string + '</span>');
 	}
 
@@ -198,10 +201,10 @@ $(document).ready(function() {
 		if(status == "0" && count == "1") {
 			document.cookie = "releaseStatus=1";
 		}
-		else if(status == "1" && count == "2") {
+		if(parseInt(count) >= 2) {
 			document.cookie = "releaseStatus=2";
 		}
-		else if(status == "2" && count == "3") {
+		if(parseInt(count) >= 3) {
 			document.cookie = "releaseStatus=3";
 		}
 	}
@@ -225,6 +228,11 @@ $(document).ready(function() {
 	function addPostCount(count) {
 		count++;
 		document.cookie = "postCount=" + encodeURIComponent(String(count));
+	}
+
+	// 投稿時間の更新
+	function updateTime() {
+		document.cookie = "lastPostTime=" + String(new Date().getTime());
 	}
 
 	// 末尾文字抽出

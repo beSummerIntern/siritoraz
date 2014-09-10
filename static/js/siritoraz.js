@@ -68,6 +68,7 @@ $(document).ready(function() {
 	$("#word_submit").submit(function(){
 		if (enableSubmit) {
 			$.post("/", $(this).serialize());
+			enableSubmit = false;
 		}
 
 		return false;
@@ -95,6 +96,8 @@ $(document).ready(function() {
 
 		// new_word 更新
 		new_word = data;
+
+		enableSubmit = true;
 	}
 
 	// 過去ワードリストに前のワードを追加
@@ -122,5 +125,7 @@ $(document).ready(function() {
 		// メッセージ表示
 		$("#word_submit .help-block").text(error_message);
 		$("#word_submit").addClass("has-error");
+
+		enableSubmit = true;
 	}
 });

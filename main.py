@@ -119,7 +119,7 @@ class MainPage(webapp2.RequestHandler):
     #     if (time.time() - user.time) / 60 < 5:
     #       error_message = '5分以内に連続して投稿することは出来ません'
 
-    if error_message == '':
+    if not len(error_message):
       # IDのオートインクリメント
       post_count = Word.query().count()
       next_id = post_count + 1
@@ -130,81 +130,86 @@ class MainPage(webapp2.RequestHandler):
       if not isAlphabet(hiragana):
         error_message = 'ワードに英数字、特殊記号が入っています！'
 
-      # しりとらず失敗判定(前回のワードの最後の文字と違うか)
-      old_words = Word.query(Word.word_id == post_count)
-      for old_word in old_words:
-        while isSutegana(old_word.hiragana[len(old_word.hiragana)-1]):
-          old_word.hiragana = old_word.hiragana[0:len(old_word.hiragana)-1]
-        if hiragana[0] == old_word.hiragana[len(old_word.hiragana)-1]:
-          error_message = u'「' + old_word.hiragana[len(old_word.hiragana)-1] + u'」で始まっています！'
+      if not len(error_message):
 
-      # しりとらず失敗判定(今までに同じワードが出たか)
-      old_words = Word.query(Word.hiragana == hiragana)
-      for old_word in old_words:
-        if old_word.hiragana:
-          error_message = str(old_word.word_id) + u'番目に同じワードが投稿されています！'
+        # しりとらず失敗判定(前回のワードの最後の文字と違うか)
+        old_words = Word.query(Word.word_id == post_count)
+        for old_word in old_words:
+          while isSutegana(old_word.hiragana[len(old_word.hiragana)-1]):
+            old_word.hiragana = old_word.hiragana[0:len(old_word.hiragana)-1]
+          if hiragana[0] == old_word.hiragana[len(old_word.hiragana)-1]:
+            error_message = u'「' + old_word.hiragana[len(old_word.hiragana)-1] + u'」で始まっています！'
 
-      image_url = ''
-      amazon_link = ''
+        if not len(error_message):
 
-      # Amazonの503エラー対策
-      retry_count = 0
-      while retry_count < 5:
-        try:
-          # Amazon商品検索
-          res = config.amazon.ItemSearch(Keywords=post_word, SearchIndex='All', ItemPage='1', ResponseGroup="Medium")
-        except:
-          retry_count += 1
-          time.sleep(1)
-          continue
-        break
+          # しりとらず失敗判定(今までに同じワードが出たか)
+          old_words = Word.query(Word.hiragana == hiragana)
+          for old_word in old_words:
+            if old_word.hiragana:
+              error_message = str(old_word.word_id) + u'番目に同じワードが投稿されています！'
 
-      # xml切り出し
-      root = fromstring(res)
-      Items = root.find(xmlns + 'Items')
-      # 商品数
-      TotalResults = Items.findtext(xmlns + 'TotalResults')
-      if int(TotalResults) != 0:
-        if len(Items):
-          Item = Items.findall(xmlns + 'Item')
-          if len(Item):
-            ImageSets = Item[0].find(xmlns + 'ImageSets')
-            if ImageSets:
-              ImageSet = ImageSets.find(xmlns + 'ImageSet')
-              Image = ImageSet.find(xmlns + 'SmallImage')
-              # 画像URL
-              image_url = Image.findtext(xmlns + 'URL')
-              # アフィリエイトURL
-              amazon_link = Item[0].findtext(xmlns + 'DetailPageURL')
-      else:
-        # しりとらず失敗
-        error_message = '存在しないワードです！'
+          if not len(error_message):
+            image_url = ''
+            amazon_link = ''
 
-      if error_message == '':
-        word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
-        word.put()
+            # Amazonの503エラー対策
+            retry_count = 0
+            while retry_count < 5:
+              try:
+                # Amazon商品検索
+                res = config.amazon.ItemSearch(Keywords=post_word, SearchIndex='All', ItemPage='1', ResponseGroup="Medium")
+              except:
+                retry_count += 1
+                time.sleep(1)
+                continue
+              break
 
-        # 送信メッセージ用JSONの作成
-        message = {
-          'type': 'new_word',
-          'word_id': word.word_id,
-          'member_id': word.member_id,
-          'word': word.word,
-          'hiragana': word.hiragana,
-          'image_url': word.image_url,
-          'amazon_link': word.amazon_link,
-          'created_at': str(word.created_at)
-        }
+            # xml切り出し
+            root = fromstring(res)
+            Items = root.find(xmlns + 'Items')
+            # 商品数
+            TotalResults = Items.findtext(xmlns + 'TotalResults')
+            if int(TotalResults) != 0:
+              if len(Items):
+                Item = Items.findall(xmlns + 'Item')
+                if len(Item):
+                  ImageSets = Item[0].find(xmlns + 'ImageSets')
+                  if ImageSets:
+                    ImageSet = ImageSets.find(xmlns + 'ImageSet')
+                    Image = ImageSet.find(xmlns + 'SmallImage')
+                    # 画像URL
+                    image_url = Image.findtext(xmlns + 'URL')
+                    # アフィリエイトURL
+                    amazon_link = Item[0].findtext(xmlns + 'DetailPageURL')
+            else:
+              # しりとらず失敗
+              error_message = '存在しないワードです！'
 
-        for user in users:
-          # 一人ずつ更新を通知する
-          channel.send_message(user.token, json.dumps(message))
-          if user.token == token:
-            user.update_time()
+            if not len(error_message):
+              word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
+              word.put()
 
-        memcache.set(USER_KEY, users)
+              # 送信メッセージ用JSONの作成
+              message = {
+                'type': 'new_word',
+                'word_id': word.word_id,
+                'member_id': word.member_id,
+                'word': word.word,
+                'hiragana': word.hiragana,
+                'image_url': word.image_url,
+                'amazon_link': word.amazon_link,
+                'created_at': str(word.created_at)
+              }
 
-    if not error_message == '':
+              for user in users:
+                # 一人ずつ更新を通知する
+                channel.send_message(user.token, json.dumps(message))
+                if user.token == token:
+                  user.update_time()
+
+              memcache.set(USER_KEY, users)
+
+    if len(error_message):
       message = {
         'type': 'error',
         'error_message': error_message

@@ -129,6 +129,9 @@ $(document).ready(function() {
 		// 機能解放状態による画面表示非表示の変更
 		changeVisibility(getCookie("releaseStatus"));
 
+		// 機能解放の通知
+		pushModal(getCookie("releaseStatus"));
+
 		enableSubmit = true;
 	}
 
@@ -210,11 +213,42 @@ $(document).ready(function() {
 		if(status == "0" && count == "1") {
 			document.cookie = "releaseStatus=1";
 		}
-		if(parseInt(count) >= 2) {
+		// ２回目の投稿
+		else if(status == "1" && count == "2") {
 			document.cookie = "releaseStatus=2";
 		}
-		if(parseInt(count) >= 3) {
+		// ３回目の投稿
+		else if(status == "2" && count == "3") {
 			document.cookie = "releaseStatus=3";
+		}
+		// ４回目の投稿（全解放）
+		else if(status == "3" && count == "4") {
+			document.cookie = "releaseStatus=4";
+		}
+	}
+
+	// 機能解放の通知
+	function pushModal(status) {
+		// 初めての投稿
+		if(status == "1") {
+			$("#achieve").text("しりとらずを初めて成功させる");
+			$("#reword_function").text("アマゾン画像リンク");
+			$("#next_achieve").text("しりとらずを２回成功させる");
+			$('#myModal').modal("toggle");
+		}
+		// ２回目の投稿
+		else if(status == "2") {
+			$("#achieve").text("しりとらずを２回成功させる");
+			$("#reword_function").text("過去ワードの閲覧");
+			$("#next_achieve").text("しりとらずを３回成功させる");
+			$('#myModal').modal("toggle");
+		}
+		// ３回目の投稿
+		else if(status == "3") {
+			$("#achieve").text("しりとらずを３回成功させる");
+			$("#reword_function").text("過去ワードリスト");
+			$("#next_achieve").text("自分で探してください");
+			$('#myModal').modal("toggle");
 		}
 	}
 

@@ -9,38 +9,46 @@
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 
 	<style>
-	.word {
-		font-size: 8em;
-	}
+		.word {
+			font-size: 8em;
+		}
 
-	.hiragana {
-		font-size: 2em;
-	}
+		.hiragana {
+			font-size: 2em;
+		}
 
-	#carousel_button {
-		display: none;
-		visibility: hidden;
-	}
+		#carousel_button {
+			display: none;
+			visibility: hidden;
+		}
 
-	#affiliate {
-		display: none;
-	}
+		#affiliate {
+			display: none;
+		}
 
-	#past_wordlist {
-		display: none;
-	}
+		#past_wordlist {
+			display: none;
+		}
 
-	.carousel-control {
-		width: 30px;
-		height: 30px;
-		top: 40%;
-		margin: 15px;
-		background: #000;
-	}
+		#more_view {
+			display: none;
+		}
 
-	.last_letter {
-		font-size: 2.5em;
-	}
+		#login {
+			display: none;
+		}
+
+		.carousel-control {
+			width: 30px;
+			height: 30px;
+			top: 40%;
+			margin: 15px;
+			background: #000;
+		}
+
+		.last_letter {
+			font-size: 2.5em;
+		}
 	</style>
 </head>
 <body>
@@ -48,11 +56,8 @@
 	<header class="navbar navbar-inverse navbar-static-top">
 		<nav class="container">
 			<div class="navbar-header"><a href="" class="navbar-brand">しりとらず</a></div>
-			<ul class="nav navbar-nav">
-				<li><a href="">ルール</a></li>
-			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="">ログイン</a></li>
+				<li><a id="login" href="">ログイン</a></li>
 			</ul>
 		</nav>
 	</header>
@@ -110,12 +115,12 @@
 			</tbody>
 		</table>
 
-		<a class="help-block">もっとみる</a>
+		<a id="more_view" class="help-block text-center">もっとみる</a>
 	</div>
 </div>
 
 <!-- footer -->
-<footer class="navbar-inverse navbar-static-top">
+<footer class="navbar navbar-static-top">
 	<div class="text-center">
 		Copyright ...
 	</div>
@@ -131,6 +136,27 @@
 	"hiragana" : "{{ word.hiragana }}", "image_url" : "{{ word.image_url }}", "amazon_link" : "{{ word.amazon_link }}", "created_at" : "{{ word.created_at }}"}
 </span>
 {% endfor %}
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title text-center text-danger" id="myModalLabel">おめでとうございます！</h4>
+			</div>
+			<div class="modal-body text-center">
+				<p>「<span id="achieve"></span>」を達成！</p>
+				<p><span id="reword_function"></span>機能が解放されました。</p>
+				<p>次の機能解放条件は「<span id="next_achieve"></span>」です。</p>
+			</div>
+			<div class="modal-footer">
+			<button type="button" class="btn btn-primary" data-dismiss="modal">ＯＫ</button>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
 
 <script src="js/siritoraz.js"></script>
 </body>

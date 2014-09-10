@@ -110,8 +110,10 @@ class MainPage(webapp2.RequestHandler):
     if isSutegana(post_word[0]):
       error_message = 'ワードが「ぁぃぅ」などで始まっています！'
 
+    # 同時接続中ユーザーのClient ID一覧を取得
+    users = memcache.get(USER_KEY)
+
     # 5分以内の連続投稿の判定
-    # users = memcache.get(USER_KEY)
     # for user in users:
     #   if user.token == token:
     #     if (time.time() - user.time) / 60 < 5:
@@ -194,14 +196,11 @@ class MainPage(webapp2.RequestHandler):
           'created_at': str(word.created_at)
         }
 
-        # 同時接続中ユーザーのClient ID一覧を取得
-        users = memcache.get(USER_KEY)
         for user in users:
           # 一人ずつ更新を通知する
           channel.send_message(user.token, json.dumps(message))
           if user.token == token:
-            # user.update_time()
-            user.time = time.time()
+            user.update_time()
 
         memcache.set(USER_KEY, users)
 
@@ -211,7 +210,6 @@ class MainPage(webapp2.RequestHandler):
         'error_message': error_message
       }
 
-      users = memcache.get(USER_KEY)
       # 投稿者に対してエラーメッセージを送信
       for user in users:
         if user.token == token:

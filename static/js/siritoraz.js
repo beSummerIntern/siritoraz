@@ -12,6 +12,7 @@ $(document).ready(function() {
 
 	// 今のワードを保持
 	var new_word = words[0];
+	
 
 	// 過去のワードリストを生成
 	for (var i = words.length - 1; i > 0; i--) {

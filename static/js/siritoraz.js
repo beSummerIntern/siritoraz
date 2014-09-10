@@ -9,12 +9,13 @@ $(document).ready(function() {
 		words.push(JSON.parse($(this).text()));
 		$(this).remove();
 	});
+	var words_length = words.length;
 
 	// 今のワードを保持
 	var new_word = words[0];
 
 	// 過去のワードリストを生成
-	for (var i = words.length - 1; i > 0; i--) {
+	for (var i = words_length - 1; i > 0; i--) {
 		addWord(words[i]);
 	}
 
@@ -147,6 +148,8 @@ $(document).ready(function() {
 			"</tr>");
 	}
 
+
+	var num_item = 0;
 	// カルーセルにワードを追加
 	function addCarouselWord(data) {
 		var string_data = findStrongLetter(data.hiragana);
@@ -159,6 +162,13 @@ $(document).ready(function() {
 			string_data.first_string + '</span><span class="last_letter text-danger">' +
 			string_data.strong_letter + '</span><span class="hiragana">' +
 			string_data.last_string + '</span>');
+		num_item++;
+
+		if(num_item > words_length) {
+			$("#carousel .carousel-inner > .item").eq(num_item - 2).children("h2").css("visibility", "hidden");
+		} else if(num_item >= 2) {
+			$("#carousel .carousel-inner > .item").eq(num_item - 1).children("h2").css("visibility", "hidden");
+		}
 	}
 
 	// エラーメッセージ表示

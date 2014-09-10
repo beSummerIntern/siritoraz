@@ -12,7 +12,6 @@ $(document).ready(function() {
 
 	// 今のワードを保持
 	var new_word = words[0];
-	
 
 	// 過去のワードリストを生成
 	for (var i = words.length - 1; i > 0; i--) {
@@ -38,7 +37,7 @@ $(document).ready(function() {
 				setTimeout(function() {
 					// タイトル消去
 					$("#carousel .carousel-inner > div").first().remove();
-				
+
 					// TODO スライドボタン追加
 				}, 2000);
 
@@ -115,10 +114,14 @@ $(document).ready(function() {
 
 	// カルーセルにワードを追加
 	function addCarouselWord(data) {
+		var string_data = findStrongLetter(data.hiragana);
+
 		$("#carousel .carousel-inner").append(
 			'<div class="item"><span class="word">' + 
 			data.word + '</span><br><span class="hiragana">' + 
-			data.hiragana + '</span>');
+			string_data.first_string + '</span><span class="last_letter text-danger">' + 
+			string_data.strong_letter + '</span><span class="hiragana">' + 
+			string_data.last_string + '</span>');
 	}
 
 	// エラーメッセージ表示
@@ -128,5 +131,29 @@ $(document).ready(function() {
 		$("#word_submit").addClass("has-error");
 
 		enableSubmit = true;
+	}
+
+	// 末尾文字抽出
+	function findStrongLetter(hiragana) {
+		var data = {
+			first_string : "",
+			strong_letter : "",
+			last_string : ""
+		};
+		var index = 0;
+
+		for (var i = 1; i <= hiragana.length; i++) {
+			var character = "" + hiragana[hiragana.length - i];
+			if(character.search(/[(ぁぃぅぇぉっゃゅょゎ)(\ー)]/) < 0) {
+				index =  hiragana.length - i;
+				break;
+			}
+		}
+
+		data.first_string = hiragana.substring(0, index);
+		data.strong_letter = hiragana[index];
+		data.last_string = hiragana.substring(index + 1);
+
+		return data;
 	}
 });

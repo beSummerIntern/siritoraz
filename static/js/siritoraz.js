@@ -232,7 +232,7 @@ $(document).ready(function() {
 			document.cookie = "releaseStatus=3";
 		}
 		// ４回目の投稿（全解放）
-		else if(status == "3" && count == "4") {
+		else if(status == "3" && parseInt(count) >= 4) {
 			document.cookie = "releaseStatus=4";
 		}
 	}
@@ -254,7 +254,7 @@ $(document).ready(function() {
 			$('#myModal').modal("toggle");
 		}
 		// ３回目の投稿
-		else if(status == "3") {
+		else if(status >= "3") {
 			$("#achieve").text("しりとらずを３回成功させる");
 			$("#reword_function").text("過去ワードリスト");
 			$("#next_achieve").text("自分で探してください");

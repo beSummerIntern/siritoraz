@@ -10,23 +10,35 @@
 
 	<style>
 	.word {
-		font-size : 8em;
+		font-size: 8em;
 	}
 
 	.hiragana {
-		font-size : 2em;
+		font-size: 2em;
 	}
 
 	#carousel_bottun {
-		visibility: hidden
+		visibility: hidden;
 	}
 
 	#affiliate {
-		display : none
+		display: none;
 	}
 
 	#past_wordlist {
-		display : none
+		display: none;
+	}
+
+	.carousel-control {
+		width: 30px;
+		height: 30px;
+		top: 40%;
+		margin: 15px;
+		background: #000;
+	}
+
+	.last_letter {
+		font-size: 2.5em;
 	}
 	</style>
 </head>
@@ -46,77 +58,79 @@
 
 	<!-- content -->
 	<!-- word carousel-->
-	<h2 class="container col-md-offset-2 col-md-10 text-left">今のワード</h2>
 	<div id="carousel" class="carousel slide text-center" data-interval="false">
 		<div class="carousel-inner">
 			<div class="active item">
+				<h2 class="" style="visibility: hidden">今のワード</h2>
 				<span class="word">しりとらず</span><br>
-				<span class="hiragana">しりとらず</span>
+				<span class="hiragana">しりとら</span>
+				<span class="last_letter text-danger">ず</span>
 			</div>
-		</div>
-
-		<div id="carousel_bottun">
-			<a class="carousel-control left" href="#carousel" data-slide="prev"></a>
-			<a class="carousel-control right" href="#carousel" data-slide="next"></a>
 		</div>
 	</div>
 
-	<div class="container text-center">
-		<!-- submit -->
-		<form id="word_submit" class="form-horizontal" style="margin : 20px 0" action="/" method="post">
-			<div class="form-group">
-				<div class="col-md-6 col-md-offset-2">
-					<input type="text" name="word" class="form-control" placeholder="ワードを入れてください">
-					<input id="token" type="hidden" name="token" value={{ token }} />
-				</div>
-				<input type="submit" class="btn btn-primary col-md-2" value="投稿">
-			</div>
+	<div id="carousel_bottun">
+		<a class="carousel-control left" href="#carousel" data-slide="prev"></a>
+		<a class="carousel-control right" href="#carousel" data-slide="next"></a>
+	</div>
+</div>
 
-			<div class="help-block">5分以内に2回連続して投稿することは出来ません
+<div class="container text-center">
+	<!-- submit -->
+	<form id="word_submit" class="form-horizontal" style="margin : 20px 0" action="/" method="post">
+		<div class="form-group">
+			<div class="col-md-6 col-md-offset-2">
+				<input type="text" name="word" class="form-control" placeholder="ワードを入れてください">
+				<input id="token" type="hidden" name="token" value={{ token }} />
 			</div>
-		</form>
-
-		<!-- affiliate -->
-		<div id="affiliate">
-			「<span>{{ words[0].word }}</span>」でAmazon検索すると．．． <a href={{ words[0].amazon_link }}><img src={{ words[0].image_url }} alt="アマゾンの画像リンク" style="height : 50px"></a>
+			<input type="submit" class="btn btn-primary col-md-2" value="投稿">
 		</div>
 
-		<!-- table -->
-		<div id="past_wordlist" class="text-left">
-			<h3>過去のワード</h3>
-			<table class="table table-hover table-bordered">
-				<thead>
-					<tr>
-						<th>No.</th><th>ワード</th><th></th><th>投稿日</th>
-					</tr>
-				</thead>
-
-				<tbody>
-				</tbody>
-			</table>
-
-			<a class="help-block">もっとみる</a>
+		<div class="help-block">5分以内に2回連続して投稿することは出来ません
 		</div>
+	</form>
+
+	<!-- affiliate -->
+	<div id="affiliate">
+		「<span>{{ words[0].word }}</span>」でAmazon検索すると．．． <a href={{ words[0].amazon_link }}><img src={{ words[0].image_url }} alt="アマゾンの画像リンク" style="height : 50px"></a>
 	</div>
 
-	<!-- footer -->
-	<footer class="navbar-inverse navbar-static-top">
-		<div class="text-center">
-			Copyright ...
-		</div>
-	</footer>
+	<!-- table -->
+	<div id="past_wordlist" class="text-left">
+		<h3>過去のワード</h3>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th>No.</th><th>ワード</th><th></th><th>投稿日</th>
+				</tr>
+			</thead>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="/_ah/channel/jsapi"></script>
+			<tbody>
+			</tbody>
+		</table>
 
-	{% for word in words %}
-	<span class="new_word" style="display: none">
-		{"word_id" : {{ word.word_id }}, "member_id" : {{ word.member_id }}, "word" : "{{ word.word }}",
-		"hiragana" : "{{ word.hiragana }}", "image_url" : "{{ word.image_url }}", "amazon_link" : "{{ word.amazon_link }}", "created_at" : "{{ word.created_at }}"}
-	</span>
-	{% endfor %}
+		<a class="help-block">もっとみる</a>
+	</div>
+</div>
 
-	<script src="js/siritoraz.js"></script>
+<!-- footer -->
+<footer class="navbar-inverse navbar-static-top">
+	<div class="text-center">
+		Copyright ...
+	</div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="/_ah/channel/jsapi"></script>
+
+{% for word in words %}
+<span class="new_word" style="display: none">
+	{"word_id" : {{ word.word_id }}, "member_id" : {{ word.member_id }}, "word" : "{{ word.word }}",
+	"hiragana" : "{{ word.hiragana }}", "image_url" : "{{ word.image_url }}", "amazon_link" : "{{ word.amazon_link }}", "created_at" : "{{ word.created_at }}"}
+</span>
+{% endfor %}
+
+<script src="js/siritoraz.js"></script>
 </body>
 </html>

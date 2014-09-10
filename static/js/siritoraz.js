@@ -72,6 +72,9 @@ $(document).ready(function() {
 	// ワード投稿時
 	$("#word_submit").submit(function(){
 		if (enableSubmit) {
+			// カルーセルを今のワードへフォーカス
+			$("#carousel").carousel($("#carousel .carousel-inner").find(".item").length - 1);
+
 			$.post("/", $(this).serialize());
 			enableSubmit = false;
 		}
@@ -88,10 +91,12 @@ $(document).ready(function() {
 		// 投稿欄内ワードの消去
 		$("#word_submit input[name='word']").val("");
 
-		// 表示の更新
+		// カルーセル追加
 		addCarouselWord(data);
-		$("#carousel").carousel("next");
 
+		// カルーセルを今のワードへフォーカス
+		$("#carousel").carousel($("#carousel .carousel-inner").find(".item").length - 1);
+		
 		$("#affiliate span").text(data.word);
 		$("#affiliate a").attr("href", data.amazon_link);
 		$("#affiliate img").attr("src", data.image_url);
@@ -128,10 +133,16 @@ $(document).ready(function() {
 
 	// カルーセルにワードを追加
 	function addCarouselWord(data) {
+		var string_data = findStrongLetter(data.hiragana);
+
 		$("#carousel .carousel-inner").append(
-			'<div class="item"><span class="word">' +
-			data.word + '</span><br><span class="hiragana">' +
-			data.hiragana + '</span>');
+			'<div class="item">' + 
+			'<h2 style="visibility: visible">今のワード</h2>' + 
+			'<span class="word">' + 
+			data.word + '</span><br><span class="hiragana">' + 
+			string_data.first_string + '</span><span class="last_letter text-danger">' + 
+			string_data.strong_letter + '</span><span class="hiragana">' + 
+			string_data.last_string + '</span>');
 	}
 
 	// エラーメッセージ表示
@@ -210,5 +221,29 @@ $(document).ready(function() {
 	function addPostCount(count) {
 		count++;
 		document.cookie = "postCount=" + encodeURIComponent(String(count));
+	}
+
+	// 末尾文字抽出
+	function findStrongLetter(hiragana) {
+		var data = {
+			first_string : "",
+			strong_letter : "",
+			last_string : ""
+		};
+		var index = 0;
+
+		for (var i = 1; i <= hiragana.length; i++) {
+			var character = "" + hiragana[hiragana.length - i];
+			if(character.search(/[(ぁぃぅぇぉっゃゅょゎ)(\ー)]/) < 0) {
+				index =  hiragana.length - i;
+				break;
+			}
+		}
+
+		data.first_string = hiragana.substring(0, index);
+		data.strong_letter = hiragana[index];
+		data.last_string = hiragana.substring(index + 1);
+
+		return data;
 	}
 });

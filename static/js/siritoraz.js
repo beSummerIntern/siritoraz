@@ -1,6 +1,7 @@
 $(document).ready(function() {
 	// 変数
 	var enableSubmit = false;
+	var num_item = 0;
 
 	// 初期処理
 	// 初期データをJSONに変換、配列に追加
@@ -71,20 +72,7 @@ $(document).ready(function() {
 			} else if (data.type == "new_word") {
 				changeCurrentWord(data);
 			} else if (data.type == "success") {
-				// クッキーの投稿回数を1回増やす
-				addPostCount(parseInt(getCookie("postCount")));
-
-				// 投稿時間の更新
-				updateTime();
-
-				// 機能解放の判定
-				functionRelease(getCookie("releaseStatus"), getCookie("postCount"));
-
-				// 機能解放状態による画面表示非表示の変更
-				changeVisibility(getCookie("releaseStatus"));
-
-				// 機能解放の通知
-				pushModal(getCookie("releaseStatus"));
+				siritorazSuccess();
 			}
 		},
 
@@ -110,16 +98,9 @@ $(document).ready(function() {
 
 	// 今のワード変更時
 	function changeCurrentWord(data) {
-		// エラーメッセージ除去、更新
-		$("#word_submit .help-block").text("しりとらず成功！");
-		$("#word_submit").removeClass("has-error");
-
 		// プレイスホルダー編集
 		var hiragana = findStrongLetter(data.hiragana);
 		$("#word_submit input[name='word']").attr("placeholder", "「" + hiragana.strong_letter + "」から始まらないワードを入れてください");
-
-		// 投稿欄内ワードの消去
-		$("#word_submit input[name='word']").val("");
 
 		// カルーセル追加
 		addCarouselWord(data);
@@ -152,8 +133,6 @@ $(document).ready(function() {
 			"</tr>");
 	}
 
-
-	var num_item = 0;
 	// カルーセルにワードを追加
 	function addCarouselWord(data) {
 		var string_data = findStrongLetter(data.hiragana);
@@ -328,5 +307,29 @@ $(document).ready(function() {
 		data.last_string = hiragana.substring(index + 1);
 
 		return data;
+	}
+
+	function siritorazSuccess() {
+		// エラーメッセージ除去、更新
+		$("#word_submit .help-block").text("しりとらず成功！");
+		$("#word_submit").removeClass("has-error");
+
+		// 投稿欄内ワードの消去
+		$("#word_submit input[name='word']").val("");
+
+		// クッキーの投稿回数を1回増やす
+		addPostCount(parseInt(getCookie("postCount")));
+
+		// 投稿時間の更新
+		updateTime();
+
+		// 機能解放の判定
+		functionRelease(getCookie("releaseStatus"), getCookie("postCount"));
+
+		// 機能解放状態による画面表示非表示の変更
+		changeVisibility(getCookie("releaseStatus"));
+
+		// 機能解放の通知
+		pushModal(getCookie("releaseStatus"));
 	}
 });

@@ -21,6 +21,7 @@ $(document).ready(function() {
 
 	// 初訪問時のクッキー初期化
 	initCookies();
+
 	// クッキーの機能解放状態による画面表示非表示の変更
 	changeVisibility(getCookie("releaseStatus"));
 
@@ -48,6 +49,9 @@ $(document).ready(function() {
 					// スライドボタン追加
 					$("#carousel_button").css("visibility", "visible");
 
+					// カルーセルのスワイプ移動を許可
+					enableCarouselSwipe(getCookie("releaseStatus"));
+
 					// プレイスホルダー編集
 					var hiragana = findStrongLetter(new_word.hiragana);
 					$("#word_submit input[name='word']").attr("placeholder", "「" + hiragana.strong_letter + "」から始まらないワードを入れてください");
@@ -67,7 +71,20 @@ $(document).ready(function() {
 			} else if (data.type == "new_word") {
 				changeCurrentWord(data);
 			} else if (data.type == "success") {
+				// クッキーの投稿回数を1回増やす
+				addPostCount(parseInt(getCookie("postCount")));
 
+				// 投稿時間の更新
+				updateTime();
+
+				// 機能解放の判定
+				functionRelease(getCookie("releaseStatus"), getCookie("postCount"));
+
+				// 機能解放状態による画面表示非表示の変更
+				changeVisibility(getCookie("releaseStatus"));
+
+				// 機能解放の通知
+				pushModal(getCookie("releaseStatus"));
 			}
 		},
 
@@ -119,21 +136,6 @@ $(document).ready(function() {
 
 		// new_word 更新
 		new_word = data;
-
-		// クッキーの投稿回数を1回増やす
-		addPostCount(parseInt(getCookie("postCount")));
-
-		// 投稿時間の更新
-		updateTime();
-
-		// 機能解放の判定
-		functionRelease(getCookie("releaseStatus"), getCookie("postCount"));
-
-		// 機能解放状態による画面表示非表示の変更
-		changeVisibility(getCookie("releaseStatus"));
-
-		// 機能解放の通知
-		pushModal(getCookie("releaseStatus"));
 
 		enableSubmit = true;
 	}
@@ -271,20 +273,25 @@ $(document).ready(function() {
 
 			if(parseInt(status) > 1) {
 				$("#carousel_button").css("display", "block");
-				// カルーセルのスワイプ移動を許可
-				$("#carousel").carousel().swipe({
-					swipeLeft:function(event, direction, distance, duration, fingerCount) {
-						$(this).carousel('next');
-					},
-					swipeRight:function(event, direction, distance, duration, fingerCount) {
-						$(this).carousel('prev');
-					}
-				});
 
 				if(parseInt(status) > 2) {
 					$("#past_wordlist").css("display", "block");
 				}
 			}
+		}
+	}
+
+	// カルーセルのスワイプ移動を許可
+	function enableCarouselSwipe(status) {
+		if(parseInt(status) > 1) {
+			$("#carousel").carousel().swipe({
+				swipeLeft:function(event, direction, distance, duration, fingerCount) {
+					$(this).carousel('next');
+				},
+				swipeRight:function(event, direction, distance, duration, fingerCount) {
+					$(this).carousel('prev');
+				}
+			});
 		}
 	}
 

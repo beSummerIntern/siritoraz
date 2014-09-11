@@ -49,7 +49,7 @@ class Word(ndb.Model):
   hiragana = ndb.StringProperty()
   image_url = ndb.StringProperty()
   amazon_link = ndb.TextProperty()
-  created_at = ndb.DateTimeProperty(auto_now_add=True)
+  created_at = ndb.StringProperty()
 
 # ChanncelAPI用のユーザークラスの定義
 class User:
@@ -86,7 +86,8 @@ class MainPage(webapp2.RequestHandler):
 
     # TODO デプロイ時は削除
     if len(words) == 0:
-      words = Word(word_id=1, member_id=0, word=u"しりとらず", hiragana=u"しりとらず", image_url="", amazon_link="")
+      current_time = (datetime.datetime.now() + datetime.timedelta(hours=9))
+      words = Word(word_id=1, member_id=0, word=u"しりとらず", hiragana=u"しりとらず", image_url="", amazon_link="", created_at=current_time.strftime("%Y/%m/%d %H:%M:%S"))
       words.put()
 
     template_values = {
@@ -175,7 +176,7 @@ class MainPage(webapp2.RequestHandler):
                   ImageSets = Item[0].find(xmlns + 'ImageSets')
                   if ImageSets:
                     ImageSet = ImageSets.find(xmlns + 'ImageSet')
-                    Image = ImageSet.find(xmlns + 'SmallImage')
+                    Image = ImageSet.find(xmlns + 'MediumImage')
                     # 画像URL
                     image_url = Image.findtext(xmlns + 'URL')
                     # アフィリエイトURL
@@ -185,7 +186,10 @@ class MainPage(webapp2.RequestHandler):
               error_message = '存在しないワードです！'
 
             if not len(error_message):
-              word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
+              # 現在時間の取得
+              current_time = (datetime.datetime.now() + datetime.timedelta(hours=9))
+
+              word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link, created_at=current_time.strftime("%Y/%m/%d %H:%M:%S"))
               word.put()
 
               # 送信メッセージ用JSONの作成
@@ -200,6 +204,7 @@ class MainPage(webapp2.RequestHandler):
                 'created_at': str(word.created_at)
               }
 
+              # 送信完了メッセージ用JSONの作成
               success = {
                 'type': 'success'
               }
@@ -208,12 +213,14 @@ class MainPage(webapp2.RequestHandler):
                 # 一人ずつ更新を通知する
                 channel.send_message(user.token, json.dumps(message))
                 if user.token == token:
+                  # 送信者へ送信完了のメッセージを送信
                   channel.send_message(user.token, json.dumps(success))
                   user.update_time()
 
               memcache.set(USER_KEY, users)
 
     if len(error_message):
+      # エラーメッセージ用JSONの作成
       message = {
         'type': 'error',
         'error_message': error_message

@@ -187,16 +187,17 @@ $(document).ready(function() {
 
 	// 初訪問時のクッキー初期化
 	function initCookies() {
+		var cookieLimitTime = new Date(new Date().getTime() + 365*24*60*60*1000);
 		if(!getCookie("releaseStatus")) {
-			document.cookie = "releaseStatus=0";
+			document.cookie = "releaseStatus=0; expires=" + cookieLimitTime;
 		}
 
 		if(!getCookie("postCount")) {
-			document.cookie = "postCount=0";
+			document.cookie = "postCount=0; expires=" + cookieLimitTime;
 		}
 
 		if(!getCookie("lastPostTime")) {
-			document.cookie = "lastPostTime=0";
+			document.cookie = "lastPostTime=0; expires=" + cookieLimitTime;
 		}
 	}
 

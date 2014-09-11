@@ -66,28 +66,44 @@ class MainPage(webapp2.RequestHandler):
 
   def get(self):
     # Channel TokenID 生成
-    client_id = str(uuid.uuid4())
-    token = channel.create_channel(client_id)
+    client_id = self.request.cookies.get('client_id', '')
+    token = self.request.cookies.get('token', '')
+    if not (len(client_id) and len(token)):
+      client_id = str(uuid.uuid4())
+      token = channel.create_channel(client_id, 24 * 60)
+
+      after_two_hours_time = (datetime.datetime.now() + datetime.timedelta(hours=33)).strftime('%a, %d-%b-%Y %H:%M:%S GMT')
+      myCookie = 'client_id=%s; expires=%s;' % (client_id, after_two_hours_time)
+      self.response.headers.add_header('Set-Cookie', myCookie)
+
+      myCookie = 'token=%s; expires=%s;' % (token, after_two_hours_time)
+      self.response.headers.add_header('Set-Cookie', myCookie)
 
     # 同時接続しているユーザーのClient ID一覧を取得
     users = memcache.get(USER_KEY)
     if not users:
       users = []
 
-    # ユーザークラスを作成する
-    user = User(client_id, token)
+    isAddUser = False
+    for user in users:
+      if user.token == token:
+        isAddUser = True
 
-    # 新しいClient IDを追加する
-    users.append(user)
-    memcache.set(USER_KEY, users)
+    if not isAddUser:
+      # ユーザークラスを作成する
+      user = User(client_id, token)
+
+      # 新しいClient IDを追加する
+      users.append(user)
+      memcache.set(USER_KEY, users)
 
     # データストアからワードデータの取得
     words = Word.query().order(-Word.word_id).fetch(11)
 
-    # TODO デプロイ時は削除
+    # TODO デプロイ時はコメントアウト
     if len(words) == 0:
       current_time = (datetime.datetime.now() + datetime.timedelta(hours=9))
-      words = Word(word_id=1, member_id=0, word=u"しりとらず", hiragana=u"しりとらず", image_url="", amazon_link="", created_at=current_time.strftime("%Y/%m/%d %H:%M:%S"))
+      words = Word(word_id=1, member_id=0, word=u"しりとらず", hiragana=u"しりとらず", image_url="http://siritoraz.appspot.com/favicon.ico", amazon_link="http://siritoraz.appspot.com", created_at=current_time.strftime("%Y/%m/%d %H:%M:%S"))
       words.put()
 
     template_values = {

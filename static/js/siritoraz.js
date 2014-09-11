@@ -66,6 +66,8 @@ $(document).ready(function() {
 				dispError(data.error_message);
 			} else if (data.type == "new_word") {
 				changeCurrentWord(data);
+			} else if (data.type == "success") {
+
 			}
 		},
 

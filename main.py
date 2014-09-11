@@ -201,10 +201,15 @@ class MainPage(webapp2.RequestHandler):
                 'created_at': str(word.created_at)
               }
 
+              success = {
+                'type': 'success'
+              }
+
               for user in users:
                 # 一人ずつ更新を通知する
                 channel.send_message(user.token, json.dumps(message))
                 if user.token == token:
+                  channel.send_message(user.token, json.dumps(success))
                   user.update_time()
 
               memcache.set(USER_KEY, users)

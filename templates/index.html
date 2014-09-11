@@ -18,6 +18,10 @@
 		display: none;
 	}
 
+	#affiliate img {
+		height: 50px;
+	}
+
 	#past_wordlist {
 		display: none;
 	}
@@ -61,6 +65,10 @@
 
 		.last_letter {
 			font-size: 2.5em;
+		}
+
+		#affiliate img {
+			height: 100px;
 		}
 	}
 	</style>
@@ -111,7 +119,7 @@
 
 		<!-- affiliate -->
 		<div id="affiliate">
-			「<span>{{ words[0].word }}</span>」でAmazon検索すると．．． <a href={{ words[0].amazon_link }}><img src={{ words[0].image_url }} alt="アマゾンの画像リンク" style="height : 50px"></a>
+			「<span>{{ words[0].word }}</span>」でAmazon検索すると．．． <a href={{ words[0].amazon_link }}><img src={{ words[0].image_url }} alt="アマゾンの画像リンク"></a>
 		</div>
 
 		<!-- table -->

@@ -127,6 +127,9 @@ class MainPage(webapp2.RequestHandler):
         error_message = 'ワードに英数字、特殊記号が入っています！'
 
       if not len(error_message):
+        # IDのオートインクリメント
+        post_count = Word.query().count()
+        next_id = post_count + 1
 
         # しりとらず失敗判定(前回のワードの最後の文字と違うか)
         old_words = Word.query(Word.word_id == post_count)
@@ -182,10 +185,6 @@ class MainPage(webapp2.RequestHandler):
               error_message = '存在しないワードです！'
 
             if not len(error_message):
-              # IDのオートインクリメント
-              post_count = Word.query().count()
-              next_id = post_count + 1
-
               word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
               word.put()
 

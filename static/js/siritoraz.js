@@ -86,6 +86,10 @@ $(document).ready(function() {
 	// ワード投稿時
 	$("#word_submit").submit(function(){
 		if (enableSubmit) {
+			// しりとらず判定中メッセージ
+			$("#word_submit .help-block").text("しりとらず判定中．．．");
+			$("#word_submit").removeClass("has-error");
+
 			// カルーセルを今のワードへフォーカス
 			$("#carousel").carousel($("#carousel .carousel-inner").find(".item").length - 1);
 

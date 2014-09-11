@@ -141,7 +141,7 @@ $(document).ready(function() {
 		$("tbody").prepend("<tr>" +
 			"<td>" + data.word_id + "</td>" +
 			"<td>" + data.word +
-			"（" + data.hiragana + "）</td>" +
+			" （" + data.hiragana + "）</td>" +
 			"<td>" + "<a href=" + data.amazon_link +
 			"><img src=" + data.image_url + ' style="height : 30px;" alt="アマゾンの画像リンク"></a></td>"' +
 			"<td>" + data.created_at + "</td>" +

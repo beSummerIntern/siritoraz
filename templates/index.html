@@ -9,14 +9,6 @@
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 
 	<style>
-	.word {
-		font-size: 8em;
-	}
-
-	.hiragana {
-		font-size: 2em;
-	}
-
 	#carousel_button {
 		display: none;
 		visibility: hidden;
@@ -38,6 +30,18 @@
 		display: none;
 	}
 
+	.word {
+		font-size: 4em;
+	}
+
+	.hiragana {
+		font-size: 1.8em;
+	}
+
+	.last_letter {
+		font-size: 2.2em;
+	}
+	
 	.carousel-control {
 		width: 30px;
 		height: 30px;
@@ -46,8 +50,18 @@
 		background: #000;
 	}
 
-	.last_letter {
-		font-size: 2.5em;
+	@media screen and (min-width: 768px) {
+		.word {
+			font-size: 8em;
+		}
+
+		.hiragana {
+			font-size: 2em;
+		}
+
+		.last_letter {
+			font-size: 2.5em;
+		}
 	}
 	</style>
 </head>
@@ -73,92 +87,90 @@
 				<span class="last_letter text-danger">ず</span>
 			</div>
 		</div>
+
+		<div id="carousel_button">
+			<a class="carousel-control left" href="#carousel" data-slide="prev">&lsaquo;</a>
+			<a class="carousel-control right" href="#carousel" data-slide="next">&rsaquo;</a>
+		</div>
 	</div>
 
-	<div id="carousel_button">
-		<a class="carousel-control left" href="#carousel" data-slide="prev"></a>
-		<a class="carousel-control right" href="#carousel" data-slide="next"></a>
-	</div>
-</div>
-
-<div class="container text-center">
-	<!-- submit -->
-	<form id="word_submit" class="form-horizontal" style="margin : 20px 0" action="/" method="post">
-		<div class="form-group">
-			<div class="col-md-6 col-md-offset-2">
-				<input type="text" name="word" class="form-control">
-				<input id="token" type="hidden" name="token" value={{ token }} />
+	<div class="container text-center">
+		<!-- submit -->
+		<form id="word_submit" class="form-horizontal" style="margin : 20px 0" action="/" method="post">
+			<div class="form-group">
+				<div class="col-xs-6 col-xs-offset-2">
+					<input type="text" name="word" class="form-control">
+					<input id="token" type="hidden" name="token" value={{ token }} />
+				</div>
+				<input type="submit" class="btn btn-primary col-xs-2" value="投稿">
 			</div>
-			<input type="submit" class="btn btn-primary col-md-2" value="投稿">
+
+			<div class="help-block">5分以内に2回連続して投稿することは出来ません
+			</div>
+		</form>
+
+		<!-- affiliate -->
+		<div id="affiliate">
+			「<span>{{ words[0].word }}</span>」でAmazon検索すると．．． <a href={{ words[0].amazon_link }}><img src={{ words[0].image_url }} alt="アマゾンの画像リンク" style="height : 50px"></a>
 		</div>
 
-		<div class="help-block">5分以内に2回連続して投稿することは出来ません
+		<!-- table -->
+		<div id="past_wordlist" class="text-left">
+			<h3>過去のワード</h3>
+			<table class="table table-hover table-bordered">
+				<thead>
+					<tr>
+						<th>No.</th><th>ワード</th><th></th><th>投稿日</th>
+					</tr>
+				</thead>
+
+				<tbody>
+				</tbody>
+			</table>
+
+			<a id="more_view" class="help-block text-center">もっとみる</a>
 		</div>
-	</form>
-
-	<!-- affiliate -->
-	<div id="affiliate">
-		「<span>{{ words[0].word }}</span>」でAmazon検索すると．．． <a href={{ words[0].amazon_link }}><img src={{ words[0].image_url }} alt="アマゾンの画像リンク" style="height : 50px"></a>
 	</div>
 
-	<!-- table -->
-	<div id="past_wordlist" class="text-left">
-		<h3>過去のワード</h3>
-		<table class="table table-hover table-bordered">
-			<thead>
-				<tr>
-					<th>No.</th><th>ワード</th><th></th><th>投稿日</th>
-				</tr>
-			</thead>
+	<!-- footer -->
+	<footer class="navbar navbar-static-top">
+		<div class="text-center">
+			Copyright ...
+		</div>
+	</footer>
 
-			<tbody>
-			</tbody>
-		</table>
-
-		<a id="more_view" class="help-block text-center">もっとみる</a>
-	</div>
-</div>
-
-<!-- footer -->
-<footer class="navbar navbar-static-top">
-	<div class="text-center">
-		Copyright ...
-	</div>
-</footer>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="/_ah/channel/jsapi"></script>
-<script src="js/jquery.touchSwipe.min.js"></script>
-
-{% for word in words %}
-<span class="new_word" style="display: none">
-	{"word_id" : {{ word.word_id }}, "member_id" : {{ word.member_id }}, "word" : "{{ word.word }}",
-	"hiragana" : "{{ word.hiragana }}", "image_url" : "{{ word.image_url }}", "amazon_link" : "{{ word.amazon_link }}", "created_at" : "{{ word.created_at }}"}
-</span>
-{% endfor %}
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title text-center text-danger" id="myModalLabel">おめでとうございます！</h4>
-			</div>
-			<div class="modal-body text-center">
-				<p>「<span id="achieve"></span>」を達成！</p>
-				<p><span id="reword_function"></span>機能が解放されました。</p>
-				<p>次の機能解放条件は「<span id="next_achieve"></span>」です。</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal">ＯＫ</button>
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title text-center text-danger" id="myModalLabel">おめでとうございます！</h4>
+				</div>
+				<div class="modal-body text-center">
+					<p>「<span id="achieve"></span>」を達成！</p>
+					<p><span id="reword_function"></span>機能が解放されました。</p>
+					<p>次の機能解放条件は「<span id="next_achieve"></span>」です。</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">ＯＫ</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-</div>
 
-<script src="js/siritoraz.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="/_ah/channel/jsapi"></script>
+	<script src="js/jquery.touchSwipe.min.js"></script>
+
+	{% for word in words %}
+	<span class="new_word" style="display: none">
+		{"word_id" : {{ word.word_id }}, "member_id" : {{ word.member_id }}, "word" : "{{ word.word }}",
+		"hiragana" : "{{ word.hiragana }}", "image_url" : "{{ word.image_url }}", "amazon_link" : "{{ word.amazon_link }}", "created_at" : "{{ word.created_at }}"}
+	</span>
+	{% endfor %}
+
+	<script src="js/siritoraz.js"></script>
 </body>
 </html>

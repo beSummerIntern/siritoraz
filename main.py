@@ -120,10 +120,6 @@ class MainPage(webapp2.RequestHandler):
     #       error_message = '5分以内に連続して投稿することは出来ません'
 
     if not len(error_message):
-      # IDのオートインクリメント
-      post_count = Word.query().count()
-      next_id = post_count + 1
-
       # ワードのひらがな変換
       hiragana = yahoo.reading(post_word)
 
@@ -186,6 +182,10 @@ class MainPage(webapp2.RequestHandler):
               error_message = '存在しないワードです！'
 
             if not len(error_message):
+              # IDのオートインクリメント
+              post_count = Word.query().count()
+              next_id = post_count + 1
+
               word = Word(word_id=next_id, member_id=0, word=post_word, hiragana=hiragana, image_url=image_url, amazon_link=amazon_link)
               word.put()
 

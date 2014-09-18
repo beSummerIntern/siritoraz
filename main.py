@@ -12,6 +12,7 @@ import json
 from xml.etree.ElementTree import *
 
 from google.appengine.ext import ndb
+from google.appengine.datastore.datastore_query import Cursor
 
 from google.appengine.api import channel
 from google.appengine.api import users
@@ -42,7 +43,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 # dbモデルの定義
 class Word(ndb.Model):
-
   word_id = ndb.IntegerProperty()
   member_id = ndb.IntegerProperty()
   word = ndb.StringProperty()
@@ -53,7 +53,6 @@ class Word(ndb.Model):
 
 # ChanncelAPI用のユーザークラスの定義
 class User:
-
   def __init__(self, client_id, token):
     self.client_id = client_id
     self.token = token
@@ -63,7 +62,6 @@ class User:
     self.time = time.time()
 
 class MainPage(webapp2.RequestHandler):
-
   def get(self):
     # CookieからChannel TokenIDを取得
     client_id = self.request.cookies.get('client_id', '')
@@ -106,7 +104,7 @@ class MainPage(webapp2.RequestHandler):
       memcache.set(USER_KEY, users, 60*60*24)
 
     # データストアからワードデータの取得
-    words = Word.query().order(-Word.word_id).fetch(11)
+    words, cursor, more = Word.query().order(-Word.word_id).fetch_page(11)
 
     # TODO デプロイ時はコメントアウト
     if len(words) == 0:
@@ -116,7 +114,9 @@ class MainPage(webapp2.RequestHandler):
 
     template_values = {
       'words': words,
-      'token': token
+      'token': token,
+      'words_cursor': cursor.urlsafe(),
+      'more_words': more
     }
 
     template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -255,9 +255,41 @@ class MainPage(webapp2.RequestHandler):
         if user.token == token:
           channel.send_message(user.token, json.dumps(message))
 
+class MoreView(webapp2.RequestHandler):
+  def post(self):
+    # リクエストからJSONを取得
+    json_data = self.request.body
+    obj = json.loads(json_data)
+
+    # データストアからワードデータの取得
+    words, cursor, more = Word.query().order(-Word.word_id).fetch_page(10, start_cursor=Cursor(urlsafe=obj['cursor']))
+
+    index = []
+
+    for word in words:
+      add_word = {
+        'word_id': word.word_id,
+        'member_id': word.member_id,
+        'word': word.word,
+        'hiragana': word.hiragana,
+        'image_url': word.image_url,
+        'amazon_link': word.amazon_link,
+        'created_at': word.created_at
+      }
+      index.append(add_word)
+
+    message = {
+      'words': index,
+      'words_cursor': cursor.urlsafe(),
+      'more_words': more
+    }
+
+    self.response.write(json.dumps(message))
+
 app = webapp2.WSGIApplication([
-  ('/', MainPage)
-  ], debug=True)
+  ('/', MainPage),
+  ('/more', MoreView)
+], debug=True)
 
 def isAlphabet(text):
   return re.search(u'^[(ぁ-ん)(ー)]+$', unicode(text))

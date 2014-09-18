@@ -96,7 +96,31 @@ $(document).ready(function() {
 			$.post("/", $(this).serialize());
 			enableSubmit = false;
 		}
+		return false;
+	});
 
+	// もっと見るボタン押下時
+	$("#more_view").click(function(e) {
+		if ($(".more_words").text()) {
+			json_data = {cursor: $(".words_cursor").text()};
+			$.ajax({
+				type: "POST",
+				url: "/more",
+				datatype: "json",
+				contentType: "application/json; charset=utf-8",
+				data: JSON.stringify(json_data),
+				success: function(obj) {
+					var data = JSON.parse(obj);
+					$(".more_words").text(data.more_words);
+					$(".words_cursor").text(data.words_cursor);
+					for(var i = 0; i < data.words.length; i++) {
+						addWordAppend(data.words[i]);
+					}
+				},
+				error: function(obj) {
+				}
+			});
+		}
 		return false;
 	});
 
@@ -128,6 +152,18 @@ $(document).ready(function() {
 	// 過去ワードリストに前のワードを追加
 	function addWord(data) {
 		$("tbody").prepend("<tr>" +
+			"<td>" + data.word_id + "</td>" +
+			"<td>" + data.word +
+			" （" + data.hiragana + "）</td>" +
+			"<td>" + "<a href=" + data.amazon_link +
+			"><img src=" + data.image_url + ' style="height : 30px;" alt="アマゾンの画像リンク"></a></td>"' +
+			"<td>" + data.created_at + "</td>" +
+			"</tr>");
+	}
+
+	// 過去ワードリストの後ろにワードを追加
+	function addWordAppend(data) {
+		$("tbody").append("<tr>" +
 			"<td>" + data.word_id + "</td>" +
 			"<td>" + data.word +
 			" （" + data.hiragana + "）</td>" +
@@ -219,9 +255,13 @@ $(document).ready(function() {
 		else if(status == "2" && count == "3") {
 			document.cookie = "releaseStatus=3";
 		}
-		// ４回目の投稿（全解放）
-		else if(status == "3" && parseInt(count) >= 4) {
+		// ４回目の投稿
+		else if(status == "3" && count == "4") {
 			document.cookie = "releaseStatus=4";
+		}
+		// ５回目以降の投稿（全解放）
+		else if(status == "4" && parseInt(count) >= 5) {
+			document.cookie = "releaseStatus=5";
 		}
 	}
 
@@ -245,6 +285,14 @@ $(document).ready(function() {
 		else if(status == "3") {
 			$("#achieve").text("しりとらずを３回成功させる");
 			$("#reword_function").text("過去ワードリスト");
+			$("#next_achieve").text("しりとらずを４回成功させる");
+			$('#myModal').modal("toggle");
+		}
+
+		// ４回目の投稿
+		else if(status == "4") {
+			$("#achieve").text("しりとらずを４回成功させる");
+			$("#reword_function").text("もっと見る");
 			$("#next_achieve").text("自分で探してください");
 			$('#myModal').modal("toggle");
 		}
@@ -253,13 +301,21 @@ $(document).ready(function() {
 	// 機能解放状態による画面表示非表示の変更
 	function changeVisibility(status) {
 		if(parseInt(status) > 0) {
+			// アマゾン広告の表示
 			$("#affiliate").css("display", "block");
 
 			if(parseInt(status) > 1) {
+				// カルーセルボタンの表示
 				$("#carousel_button").css("display", "block");
 
 				if(parseInt(status) > 2) {
+					// 過去ワードリストの表示
 					$("#past_wordlist").css("display", "block");
+
+					if(parseInt(status) > 3) {
+						// もっと見るボタンの表示
+						$("#more_view").css("display", "block");
+					}
 				}
 			}
 		}

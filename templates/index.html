@@ -9,72 +9,72 @@
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 
 	<style>
-	#carousel_button {
-		display: none;
-		visibility: hidden;
-	}
+		#carousel_button {
+			display: none;
+			visibility: hidden;
+		}
 
-	#affiliate {
-		display: none;
-	}
+		#affiliate {
+			display: none;
+		}
 
-	#affiliate img {
-		height: 50px;
-	}
-
-	#past_wordlist {
-		display: none;
-	}
-
-	#more_view {
-		display: none;
-	}
-
-	#login {
-		display: none;
-	}
-
-	.word {
-		font-size: 4em;
-	}
-
-	.hiragana {
-		font-size: 1.8em;
-	}
-
-	.last_letter {
-		font-size: 2.2em;
-	}
-	
-	.carousel-control {
-		width: 30px;
-		height: 30px;
-		top: 100px;
-		margin: 15px;
-		background: #000;
-	}
-
-	footer {
-		margin-top: 20px;
-	}
-
-	@media screen and (min-width: 768px) {
 		#affiliate img {
-			height: 100px;
+			height: 50px;
+		}
+
+		#past_wordlist {
+			display: none;
+		}
+
+		#more_view {
+			display: none;
+		}
+
+		#login {
+			display: none;
 		}
 
 		.word {
-			font-size: 8em;
+			font-size: 4em;
 		}
 
 		.hiragana {
-			font-size: 2em;
+			font-size: 1.8em;
 		}
 
 		.last_letter {
-			font-size: 2.5em;
+			font-size: 2.2em;
 		}
-	}
+
+		.carousel-control {
+			width: 30px;
+			height: 30px;
+			top: 100px;
+			margin: 15px;
+			background: #000;
+		}
+
+		footer {
+			margin-top: 20px;
+		}
+
+		@media screen and (min-width: 768px) {
+			#affiliate img {
+				height: 100px;
+			}
+
+			.word {
+				font-size: 8em;
+			}
+
+			.hiragana {
+				font-size: 2em;
+			}
+
+			.last_letter {
+				font-size: 2.5em;
+			}
+		}
 	</style>
 </head>
 <body>
@@ -112,7 +112,7 @@
 			<div class="form-group">
 				<div class="col-sm-6 col-sm-offset-2">
 					<input type="text" name="word" class="form-control" style="margin: 5px 0">
-					<input id="token" type="hidden" name="token" value={{ token }} />
+					<input id="token" type="hidden" name="token" value={{ token }}>
 				</div>
 				<input type="submit" class="btn btn-primary col-sm-2" value="　投稿　" style="margin: 5px 0">
 			</div>
@@ -140,7 +140,7 @@
 				</tbody>
 			</table>
 
-			<a id="more_view" class="help-block text-center">もっとみる</a>
+			<a href="" id="more_view" class="help-block text-center">もっとみる</a>
 		</div>
 	</div>
 
@@ -180,6 +180,14 @@
 		"hiragana" : "{{ word.hiragana }}", "image_url" : "{{ word.image_url }}", "amazon_link" : "{{ word.amazon_link }}", "created_at" : "{{ word.created_at }}"}
 	</span>
 	{% endfor %}
+
+	<span class="words_cursor" style="display: none">
+		{{ words_cursor }}
+	</span>
+
+	<span class="more_words" style="display: none">
+		{{ more_words }}
+	</span>
 
 	<script src="js/siritoraz.js"></script>
 </body>

@@ -105,7 +105,9 @@ $(document).ready(function() {
 			json_data = {cursor: $(".words_cursor").text()};
 			$.ajax({
 				type: "POST",
+				// TODO デプロイ時は下を使う
 				url: "/more",
+				// url: "http://siritoraz.appspot.com/more",
 				datatype: "json",
 				contentType: "application/json; charset=utf-8",
 				data: JSON.stringify(json_data),

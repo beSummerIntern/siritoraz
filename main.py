@@ -289,7 +289,7 @@ class MoreView(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
   ('/', MainPage),
   ('/more', MoreView)
-], debug=True)
+], debug=False)
 
 def isAlphabet(text):
   return re.search(u'^[(ぁ-ん)(ー)]+$', unicode(text))
